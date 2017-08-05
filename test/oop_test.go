@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"testing"
 	"strconv"
+	"testing"
 )
 
 //值类型: 基础类型 array struct pointer
@@ -96,7 +96,7 @@ func TestMethodString(t *testing.T) {
 }
 
 type Element interface{}
-type List[] Element
+type List []Element
 
 func TestInterfaceCommaOk(t *testing.T) {
 	list := make(List, 3)
