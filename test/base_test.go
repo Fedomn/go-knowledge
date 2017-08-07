@@ -34,11 +34,13 @@ func TestSlice(t *testing.T) {
 }
 
 func TestSliceAppend(t *testing.T) {
-	var a []int
-	fmt.Println(a)
-
-	a = append(a, 0, 1, 2, 3)
-	fmt.Println(a)
+	var res []int
+	fmt.Println("Capacity was:", cap(res))
+	for i := 0; i < 5; i++ {
+		res = append(res, i)
+		fmt.Println("Capacity is now:", cap(res))
+	}
+	fmt.Println(res, len(res), cap(res))
 }
 
 func TestForRange(t *testing.T) {
