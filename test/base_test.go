@@ -72,6 +72,9 @@ func TestMap(t *testing.T) {
 	}
 }
 
+// select会阻塞，直到条件分支中的某个可以继续执行，这时就会执行那个条件分支。
+// 当多个都准备好的时候，会随机选择一个。
+// 为了非阻塞的发送或者接收，可使用default分支。
 func TestSelect(t *testing.T) {
 	c1 := make(chan string)
 	c2 := make(chan string)
