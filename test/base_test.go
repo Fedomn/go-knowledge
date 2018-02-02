@@ -227,7 +227,7 @@ func TestAtomicCounters(t *testing.T) {
 
 func TestEnum(t *testing.T) {
 	const (
-		one = iota
+		one   = iota
 		two
 		three
 	)
@@ -252,4 +252,16 @@ func TestPanic(t *testing.T) {
 		panic("throw panic")
 	})
 	fmt.Println(hasPanic)
+}
+
+func TestBreak(t *testing.T) {
+loop:
+	for {
+		switch {
+		case true:
+			fmt.Println("breaking out...")
+			break loop
+		}
+	}
+	fmt.Println("out!")
 }
