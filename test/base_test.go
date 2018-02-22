@@ -244,7 +244,7 @@ func TestAtomicCounters(t *testing.T) {
 
 func TestEnum(t *testing.T) {
 	const (
-		one   = iota
+		one = iota
 		two
 		three
 	)

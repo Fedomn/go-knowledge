@@ -1,12 +1,12 @@
 package main
 
 import (
-	"testing"
-	"os"
 	"bufio"
-	"time"
 	"fmt"
+	"os"
 	"sync/atomic"
+	"testing"
+	"time"
 )
 
 // 每10000条写一次磁盘

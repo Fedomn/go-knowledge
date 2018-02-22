@@ -3,11 +3,11 @@
 package main
 
 import (
-	"sync"
 	"fmt"
 	"runtime"
-	"time"
+	"sync"
 	"testing"
+	"time"
 )
 
 type ActionListener interface {
