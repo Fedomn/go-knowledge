@@ -13,6 +13,11 @@ import (
 //复合类型:
 //pointer array slice map chan struct interface
 
+//引用类型：
+//slice map chan
+//值类型：
+//除了上面三个都是值类型
+
 func TestPointer(t *testing.T) {
 	p := 123
 	fmt.Println(&p)
