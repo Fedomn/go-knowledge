@@ -1,3 +1,4 @@
+//http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/
 //https://gist.github.com/NewbMiao/0ae9f9e7f4915d78a963980126e53f49
 
 package main
@@ -45,6 +46,7 @@ func NewWorker(i int) Worker {
 
 func (w Worker) Start() {
 	for {
+		// 向 workerPool 里注册一个 worker
 		p.workerPool <- w.JobChannel
 		select {
 		case job := <-w.JobChannel:
@@ -99,7 +101,10 @@ func init() {
 
 func dispatch() {
 	for job := range p.jobQueue {
-		<-p.workerPool <- job
+		// 取出一个worker(即 worker.start里 注册的worker)
+		// 待worker执行完job后，worker.start里会重新 将worker注册到workerPool里
+		jobChannel := <-p.workerPool
+		jobChannel <- job
 	}
 }
 
