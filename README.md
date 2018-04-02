@@ -15,3 +15,4 @@
 * [随机数](https://github.com/Fedomn/go-knowledge/blob/master/test/rand_test.go)
 * [反射](https://github.com/Fedomn/go-knowledge/blob/master/test/reflect_test.go)
 * [stream](https://github.com/Fedomn/go-knowledge/blob/master/test/stream_test.go)
+* [merge chans](https://github.com/Fedomn/go-knowledge/blob/master/test/merge_chans_test.go)
