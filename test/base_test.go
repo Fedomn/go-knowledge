@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"runtime"
 	"sync/atomic"
 	"testing"
@@ -249,7 +250,7 @@ func TestAtomicCounters(t *testing.T) {
 
 func TestEnum(t *testing.T) {
 	const (
-		one = iota
+		one   = iota
 		two
 		three
 	)
@@ -286,4 +287,12 @@ loop:
 		}
 	}
 	fmt.Println("out!")
+}
+
+func TestPassword(t *testing.T) {
+	pwd := []byte("TestPassword")
+	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
+	fmt.Println(string(hash), err)
+	err = bcrypt.CompareHashAndPassword(hash, pwd)
+	fmt.Println(err)
 }
