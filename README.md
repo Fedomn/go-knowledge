@@ -16,3 +16,4 @@
 * [反射](https://github.com/Fedomn/go-knowledge/blob/master/test/reflect_test.go)
 * [stream](https://github.com/Fedomn/go-knowledge/blob/master/test/stream_test.go)
 * [merge chans](https://github.com/Fedomn/go-knowledge/blob/master/test/merge_chans_test.go)
+* [sync-map](https://github.com/Fedomn/go-knowledge/blob/master/test/concurrency_map_test.go)
