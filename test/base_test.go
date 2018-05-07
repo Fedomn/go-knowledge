@@ -250,7 +250,7 @@ func TestAtomicCounters(t *testing.T) {
 
 func TestEnum(t *testing.T) {
 	const (
-		one = iota
+		one   = iota
 		two
 		three
 	)
@@ -295,4 +295,15 @@ func TestPassword(t *testing.T) {
 	fmt.Println(string(hash), err)
 	err = bcrypt.CompareHashAndPassword(hash, pwd)
 	fmt.Println(err)
+}
+
+func TestArrayComp(t *testing.T) {
+	a := [3]int{1, 2, 3}
+	c := [3]int{1, 3, 2}
+	d := [3]int{1, 2, 3}
+	fmt.Println(a == d)
+	fmt.Printf("&a=%p &d=%p\n", &a, &d)
+
+	fmt.Println(a == c)
+	fmt.Printf("&a=%p &c=%p\n", &a, &c)
 }
