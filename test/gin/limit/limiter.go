@@ -31,7 +31,7 @@ func MaxAllowed(n int) gin.HandlerFunc {
 // copy from https://medium.com/@salvatoregiordanoo/a-step-approach-to-rate-limiting-f2190dff9fd4
 // 请求都是过来了的 限流只是不进行业务逻辑处理直接返回
 // 想象成一条管道 左进右出。窗口是以左边(now)开始，向右边走(slidingWindow)距离
-func NewRateLimiterMiddleware(redisClient *redis.Client, key string, limit int, slidingWindow time.Duration) gin.HandlerFunc {
+func NewRateLimiterMiddleware(redisClient *redis.Client, key string, limit int64, slidingWindow time.Duration) gin.HandlerFunc {
 
 	_, err := redisClient.Ping().Result()
 	if err != nil {
@@ -50,9 +50,9 @@ func NewRateLimiterMiddleware(redisClient *redis.Client, key string, limit int, 
 
 		// 按照score从低到高的顺序返回范围内的元素
 		// 返回窗口内的元素
-		reqs, _ := redisClient.ZRange(userCntKey, 0, -1).Result()
+		reqCount, _ := redisClient.ZCount(userCntKey, "-inf", "+inf").Result()
 
-		if len(reqs) >= limit {
+		if reqCount >= limit {
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
 				"status":  http.StatusTooManyRequests,
 				"message": "too many request",

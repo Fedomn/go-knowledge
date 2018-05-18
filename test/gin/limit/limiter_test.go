@@ -11,6 +11,7 @@ import (
 
 // SortedSet命令 http://redisdoc.com/sorted_set/index.html
 // ZRANGE 127.0.0.1:test 0 -1 WITHSCORES
+// ZREMRANGEBYSCORE 127.0.0.1:test 0 1
 
 func TestRedisLimiter(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
