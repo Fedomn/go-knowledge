@@ -50,7 +50,7 @@ func NewRateLimiterMiddleware(redisClient *redis.Client, key string, limit int64
 
 		// 按照score从低到高的顺序返回范围内的元素
 		// 返回窗口内的元素
-		reqCount, _ := redisClient.ZCount(userCntKey, "-inf", "+inf").Result()
+		reqCount, _ := redisClient.ZCard(userCntKey).Result()
 
 		if reqCount >= limit {
 			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
