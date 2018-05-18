@@ -71,3 +71,43 @@ func NewRateLimiterMiddleware(redisClient *redis.Client, key string, limit int64
 		redisClient.Expire(userCntKey, slidingWindow)
 	}
 }
+
+var rateScript = redis.NewScript(`
+local key = KEYS[1]
+local now, win = tonumber(ARGV[1]), tonumber(ARGV[2])
+
+redis.call('ZREMRANGEBYSCORE', key, 0, now - win)
+local ret = redis.call('ZCARD', key)
+redis.call('ZADD', key, now, now)
+redis.call('EXPIRE', key, ARGV[3])
+
+return ret
+`)
+
+func NewRateLimiterMiddlewareV2(redisClient *redis.Client, key string, limit int64, slidingWindow time.Duration) gin.HandlerFunc {
+
+	_, err := redisClient.Ping().Result()
+	if err != nil {
+		panic(fmt.Sprint("error init redis", err.Error()))
+	}
+
+	return func(c *gin.Context) {
+		now := time.Now().UnixNano()
+		userCntKey := fmt.Sprint(c.ClientIP(), ":", key)
+
+		reqCount, err := rateScript.Run(redisClient, []string{userCntKey}, now, slidingWindow.Nanoseconds(), slidingWindow.Seconds()).Result()
+		if err != nil {
+			panic(fmt.Sprint("run script error", err.Error()))
+		}
+
+		if reqCount.(int64) >= limit {
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+				"status":  http.StatusTooManyRequests,
+				"message": "too many request",
+			})
+			return
+		}
+
+		c.Next()
+	}
+}
