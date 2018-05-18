@@ -8,11 +8,12 @@ import (
 	"time"
 )
 
-// 总体参考：https://www.cnblogs.com/AndyAo/p/8144049.html
+// 总体参考：https://www.zybuluo.com/kay2/note/949160
 
 // 1、限制瞬时并发数
-// copy from https://github.com/gin-gonic/contrib gin-limit
 // 防止一次性建立过多连接 消耗大量资源 反而性能下降
+
+// copy from https://github.com/gin-gonic/contrib gin-limit
 func MaxAllowed(n int) gin.HandlerFunc {
 	sem := make(chan struct{}, n)
 	acquire := func() { sem <- struct{}{} }
@@ -25,6 +26,8 @@ func MaxAllowed(n int) gin.HandlerFunc {
 }
 
 // 2、限制时间窗最大请求数
+// 可能出现流量不平滑情况，窗口内一小段流量占比特别大
+
 // copy from https://medium.com/@salvatoregiordanoo/a-step-approach-to-rate-limiting-f2190dff9fd4
 // 请求都是过来了的 限流只是不进行业务逻辑处理直接返回
 // 想象成一条管道 左进右出。窗口是以左边(now)开始，向右边走(slidingWindow)距离
