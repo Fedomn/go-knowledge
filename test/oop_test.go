@@ -113,7 +113,7 @@ func TestInterfaceCommaOk(t *testing.T) {
 		case Human:
 			fmt.Printf("list[%d] is a Human and its value is %s\n", index, value)
 		default:
-			fmt.Println("list[%d] is of a different type", index)
+			fmt.Printf("list[%d] is of a different type", index)
 		}
 	}
 }
