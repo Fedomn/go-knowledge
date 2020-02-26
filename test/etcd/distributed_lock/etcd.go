@@ -3,8 +3,9 @@ package distributed_lock
 import (
 	"context"
 	"fmt"
-	"github.com/coreos/etcd/client"
 	"time"
+
+	"github.com/coreos/etcd/client"
 )
 
 type EtcdMutex struct {

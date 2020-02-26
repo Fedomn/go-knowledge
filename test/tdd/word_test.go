@@ -1,8 +1,9 @@
 package tdd_test
 
 import (
-	. "fedomn/go-knowledge/test/tdd"
 	"testing"
+
+	. "github.com/fedomn/go-knowledge/test/tdd"
 )
 
 func TestInput1(t *testing.T) {

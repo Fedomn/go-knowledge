@@ -3,9 +3,10 @@ package service_discovery
 import (
 	"context"
 	"fmt"
-	"github.com/coreos/etcd/client"
 	"sync"
 	"time"
+
+	"github.com/coreos/etcd/client"
 )
 
 const KEY = "/service/discovery"

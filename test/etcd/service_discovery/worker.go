@@ -3,8 +3,9 @@ package service_discovery
 import (
 	"context"
 	"fmt"
-	"github.com/coreos/etcd/client"
 	"time"
+
+	"github.com/coreos/etcd/client"
 )
 
 var TTL = time.Second * 3

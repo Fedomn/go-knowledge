@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"net/http"
 	"testing"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 // 主要作用控制 多个相关的goroutine退出
