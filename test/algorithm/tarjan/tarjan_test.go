@@ -136,8 +136,8 @@ func tarjan(acct *sccAcct, v Vertex, graph map[Vertex][]Vertex) int {
 			// 继续搜索，找到target邻居的low link value，找到后更新target的low
 			lowLinkIdxFromTargetNeighbor := tarjan(acct, target, graph)
 			minIdx = min(acct.dfn[v], lowLinkIdxFromTargetNeighbor)
-			//minIdx = min(minIdx, lowLinkIdxFromTargetNeighbor)
-			// 跟新target的low link value
+			// minIdx = min(minIdx, lowLinkIdxFromTargetNeighbor)
+			// 更新target的low link value
 			acct.low[target] = lowLinkIdxFromTargetNeighbor
 			acct.low[v] = minIdx
 		} else if acct.inStack(target) {
@@ -148,7 +148,8 @@ func tarjan(acct *sccAcct, v Vertex, graph map[Vertex][]Vertex) int {
 
 	// v顶点的所有邻居的low link value更新完了
 	// 判断v顶点的访问序号 是否等于 v邻居的low link value
-	// 如果有环路，通过上面的for循环，会让v邻居的low link value一致
+	// 如果刚好有一个圆环路，通过上面的for循环，会让v所有target邻居的low link value。如case1中[0,1,2]
+	// 如果不是一个圆环，环路有交叉，如case2中[1,3,4,2]有两个环，4为中间共用点。则v的target的low值可以不一样。参考case2l的low map
 	if acct.dfn[v] == minIdx {
 		var scc []Vertex
 		for {
