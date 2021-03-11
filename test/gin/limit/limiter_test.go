@@ -1,7 +1,7 @@
 package limit_test
 
 import (
-	. "fedomn/go-knowledge/test/gin/limit"
+	. "github.com/fedomn/go-knowledge/test/gin/limit"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"net/http"
