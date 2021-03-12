@@ -19,6 +19,11 @@ func Test_SortSearch(t *testing.T) {
 	idx, present = searchFirstLargerIdx(nodes, find)
 	fmt.Printf("nodes: %v, find: %d, idx: %d, present: %t\n", nodes, find, idx, present)
 
+	find = -2
+	sort.Ints(nodes)
+	idx, present = searchFirstLargerIdx(nodes, find)
+	fmt.Printf("nodes: %v, find: %d, idx: %d, present: %t\n", nodes, find, idx, present)
+
 	find = 2
 	nodes = []int{}
 	idx, present = searchFirstLargerIdx(nodes, find)
