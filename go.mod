@@ -1,6 +1,6 @@
 module github.com/fedomn/go-knowledge
 
-go 1.14
+go 1.16
 
 require (
 	github.com/coreos/bbolt v1.3.3 // indirect
@@ -26,7 +26,6 @@ require (
 	github.com/soheilhy/cmux v0.1.4 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20200122045848-3419fae592fc // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
-	go.etcd.io/bbolt v1.3.3 // indirect
 	go.uber.org/zap v1.14.0 // indirect
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
