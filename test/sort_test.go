@@ -7,7 +7,7 @@ import (
 )
 
 func Test_SortSearch(t *testing.T) {
-	nodes := []int{1, 5, 2, 4, 3, 1, 2}
+	nodes := []int{1, 5, 2, 4, 3, 1, 2, 22222}
 
 	find := 2
 	sort.Ints(nodes)
