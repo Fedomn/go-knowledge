@@ -6,8 +6,8 @@ import (
 
 // internal inode inside internalNode
 type internalInode struct {
-	key   string
-	value string
+	key   int
+	value int
 	left  node
 	right node
 }
@@ -26,7 +26,7 @@ func newInternalNode(degree int) *internalNode {
 	return in
 }
 
-func (in *internalNode) find(key string) (int, bool) {
+func (in *internalNode) find(key int) (int, bool) {
 	comparedFunc := func(idx int) bool {
 		return in.inodes[idx].key >= key
 	}
@@ -52,7 +52,7 @@ func (in *internalNode) full() bool {
 	return len(in.inodes) == in.degree
 }
 
-func (in *internalNode) insert(key string, value string, leftNode node, rightNode node) (spilledKey string, spilledValue string, spilledNode node, spilled bool) {
+func (in *internalNode) insert(key int, value int, leftNode node, rightNode node) (spilledKey int, spilledValue int, spilledNode node, spilled bool) {
 	idx, _ := in.find(key)
 
 	// Add capacity and shift nodes if we don't have an exact match and need to insert.
@@ -76,10 +76,10 @@ func (in *internalNode) insert(key string, value string, leftNode node, rightNod
 		rightBranchNode, midKey, midValue := in.split()
 		return midKey, midValue, rightBranchNode, true
 	}
-	return "", "", nil, false
+	return -1, -1, nil, false
 }
 
-func (in *internalNode) split() (node, string, string) {
+func (in *internalNode) split() (node, int, int) {
 	midIdx := in.degree / 2
 	midKey := in.inodes[midIdx].key
 	midValue := in.inodes[midIdx].value

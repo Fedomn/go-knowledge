@@ -6,8 +6,8 @@ import (
 
 // leaf inode inside leafNode
 type leafInode struct {
-	key   string
-	value string
+	key   int
+	value int
 }
 
 type leafNode struct {
@@ -23,7 +23,7 @@ func newLeafNode(degree int) *leafNode {
 	}
 }
 
-func (l *leafNode) find(key string) (int, bool) {
+func (l *leafNode) find(key int) (int, bool) {
 	comparedFunc := func(idx int) bool {
 		// >= means find the first larger or equals key
 		return l.inodes[idx].key >= key
@@ -49,7 +49,7 @@ func (l *leafNode) full() bool {
 	return len(l.inodes) == l.degree
 }
 
-func (l *leafNode) insert(key string, value string, leftNode node, rightNode node) (spilledKey string, spilledValue string, spilledNode node, spilled bool) {
+func (l *leafNode) insert(key int, value int, leftNode node, rightNode node) (spilledKey int, spilledValue int, spilledNode node, spilled bool) {
 	idx, _ := l.find(key)
 
 	// Add capacity and shift nodes if we don't have an exact match and need to insert.
@@ -69,10 +69,10 @@ func (l *leafNode) insert(key string, value string, leftNode node, rightNode nod
 		return midKey, midValue, nextLeafNode, true
 	}
 
-	return "", "", nil, false
+	return -1, -1, nil, false
 }
 
-func (l *leafNode) split() (node, string, string) {
+func (l *leafNode) split() (node, int, int) {
 	midIdx := l.degree / 2
 	midKey := l.inodes[midIdx].key
 	midValue := l.inodes[midIdx].value

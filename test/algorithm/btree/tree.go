@@ -1,6 +1,8 @@
 package btree
 
-import "errors"
+import (
+	"errors"
+)
 
 type BPlusTree struct {
 	root   node
@@ -15,7 +17,7 @@ func newTree(degree int) *BPlusTree {
 
 // key points
 // 1. 通过tree的insert最终一定是发生在leafNode上，internalNode上insert只会发生在spill时刻需要上溢节点
-func (tree *BPlusTree) Insert(key string, value string) error {
+func (tree *BPlusTree) Insert(key int, value int) error {
 	if tree.root == nil {
 		leafNode := newLeafNode(tree.degree)
 		leafNode.insert(key, value, nil, nil)
@@ -38,7 +40,7 @@ func (tree *BPlusTree) Insert(key string, value string) error {
 	return nil
 }
 
-func (tree *BPlusTree) insertIntoParent(leftNode node, key string, value string, rightNode node) {
+func (tree *BPlusTree) insertIntoParent(leftNode node, key int, value int, rightNode node) {
 	if leftNode.parent() == nil {
 		internalNode := newInternalNode(tree.degree)
 		internalNode.insert(key, value, leftNode, rightNode)
@@ -51,18 +53,28 @@ func (tree *BPlusTree) insertIntoParent(leftNode node, key string, value string,
 		return
 	}
 
-	spilledKey, spilledValue, spilledNode, spilled := leftNode.parent().insert(key, value, leftNode, rightNode)
-	if !spilled {
+	leftNodeParent := leftNode.parent()
+
+	pSpilledKey, pSpilledValue, pSpilledNode, pSpilled := leftNodeParent.insert(key, value, leftNode, rightNode)
+	if !pSpilled {
 		return
 	}
 
-	tree.insertIntoParent(leftNode, spilledKey, spilledValue, spilledNode)
+	// 递归到这里的情况，一定是internalNode的分裂，所以这时insertIntoParent的leftNode是leftNodeParent
+	// 同时递归之前，将internalNode对应的左右leafNode的parent值给更新好(只要更新pSpilledNode的leafNode就好，因为左branch仍用老的node)
+	if pNode, ok := pSpilledNode.(*internalNode); ok {
+		for idx := range pNode.inodes {
+			pNode.inodes[idx].left.setParent(pNode)
+			pNode.inodes[idx].right.setParent(pNode)
+		}
+	}
+	tree.insertIntoParent(leftNodeParent, pSpilledKey, pSpilledValue, pSpilledNode)
 }
 
-func (tree BPlusTree) Search(key string) (string, bool) {
+func (tree BPlusTree) Search(key int) (int, bool) {
 	ok, idx, foundInode := tree.search(tree.root, key)
 	if !ok {
-		return "", false
+		return -1, false
 	}
 	switch node := foundInode.(type) {
 	case *leafNode:
@@ -74,7 +86,7 @@ func (tree BPlusTree) Search(key string) (string, bool) {
 	}
 }
 
-func (tree *BPlusTree) search(n node, key string) (exist bool, inodeIdx int, foundNode node) {
+func (tree *BPlusTree) search(n node, key int) (exist bool, inodeIdx int, foundNode node) {
 	cursor := n
 	inodeIdx = -1
 	for {
@@ -104,5 +116,30 @@ func (tree *BPlusTree) search(n node, key string) (exist bool, inodeIdx int, fou
 		default:
 			panic("invalid node")
 		}
+	}
+}
+
+func (tree *BPlusTree) preOrderTraversal() []int {
+	result := make([]int, 0)
+	cursor := tree.root
+	preOrderWalk(cursor, &result)
+	return result
+}
+
+func preOrderWalk(cursor node, result *[]int) {
+	switch node := cursor.(type) {
+	case *leafNode:
+		for _, inode := range node.inodes {
+			*result = append(*result, inode.key)
+		}
+	case *internalNode:
+		for i := range node.inodes {
+			inode := node.inodes[i]
+			*result = append(*result, inode.key)
+			preOrderWalk(inode.left, result)
+			preOrderWalk(inode.right, result)
+		}
+	default:
+		panic("invalid node")
 	}
 }
