@@ -1,5 +1,10 @@
 package btree
 
+import (
+	"strconv"
+	"testing"
+)
+
 // https://en.wikipedia.org/wiki/B%2B_tree
 // A B+ tree consists of a root, internal nodes and leaves
 // block-oriented storage data-structure
@@ -10,3 +15,14 @@ package btree
 // https://github.com/xiang90/bplustree
 // https://github.com/abhishekchaturvedi/bplustree
 // https://github.com/collinglass/bptree
+
+func TestInsert_Basic(t *testing.T) {
+	tree := newTree(3)
+	for i := 0; i < 10; i++ {
+		err := tree.Insert(strconv.Itoa(i), strconv.Itoa(i))
+		if err != nil {
+			t.Fatalf("BTree insert error %v", err)
+		}
+	}
+	t.Logf("BTree : %v", tree)
+}

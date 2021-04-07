@@ -7,18 +7,20 @@ import (
 // internal inode inside internalNode
 type internalInode struct {
 	key   string
+	value string
 	left  node
 	right node
 }
 
 type internalNode struct {
+	degree int
 	p      *internalNode
 	inodes []internalInode
 }
 
-func newInternalNode(p *internalNode) *internalNode {
+func newInternalNode(degree int) *internalNode {
 	in := &internalNode{
-		p:      p,
+		degree: degree,
 		inodes: make([]internalInode, 0),
 	}
 	return in
@@ -46,41 +48,51 @@ func (in *internalNode) setParent(i *internalNode) {
 	in.p = i
 }
 
-// max degree in internal node, it depends on os pageSize - internalNode pointer size / internalInode size
-const MaxInternalInodesCount = 3
-
 func (in *internalNode) full() bool {
-	return len(in.inodes) == MaxInternalInodesCount
+	return len(in.inodes) == in.degree
 }
 
-func (in *internalNode) insert(key string, child node) (spilledKey string, spilledNode *internalNode, spilled bool) {
+func (in *internalNode) insert(key string, value string, leftNode node, rightNode node) (spilledKey string, spilledValue string, spilledNode node, spilled bool) {
 	idx, _ := in.find(key)
 
-	in.inodes = append(in.inodes[idx+1:], in.inodes[idx:len(in.inodes)]...)
+	// Add capacity and shift nodes if we don't have an exact match and need to insert.
+	exact := len(in.inodes) > 0 && idx < len(in.inodes)
+	if !exact {
+		in.inodes = append(in.inodes, internalInode{})
+		copy(in.inodes[idx+1:], in.inodes[idx:])
+	} else {
+		in.inodes = append(in.inodes[idx+1:], in.inodes[idx:]...)
+		// in.inodes = append(in.inodes[idx+1:], in.inodes[idx:len(in.inodes)]...)
+	}
+
 	in.inodes[idx].key = key
-	// TODO need fill inode left and right keys
-	//in.inodes[idx]. = child
-	//child.setParent(in)
+	in.inodes[idx].value = value
+	in.inodes[idx].left = leftNode
+	in.inodes[idx].left.setParent(in)
+	in.inodes[idx].right = rightNode
+	in.inodes[idx].right.setParent(in)
 
 	if in.full() {
-		rightBranchNode, midKey := in.split()
-		return midKey, rightBranchNode, true
+		rightBranchNode, midKey, midValue := in.split()
+		return midKey, midValue, rightBranchNode, true
 	}
-	return "", nil, false
+	return "", "", nil, false
 }
 
-func (in *internalNode) split() (*internalNode, string) {
-	midIdx := MaxInternalInodesCount / 2
+func (in *internalNode) split() (node, string, string) {
+	midIdx := in.degree / 2
 	midKey := in.inodes[midIdx].key
+	midValue := in.inodes[midIdx].value
 
 	// new internalNode as rightBranch
-	newInternalNode := newInternalNode(nil)
-	newInternalNode.inodes = append(newInternalNode.inodes[0:], in.inodes[midIdx:]...)
+	newInternalNode := newInternalNode(in.degree)
+	// TODO
+	newInternalNode.inodes = append(newInternalNode.inodes[0:], in.inodes[midIdx+1:]...)
 
 	// update new internal node children's parent
 	//for i := 0; i < len(newInternalNode.inodes); i++ {
-		//newInternalNode.inodes[i].child.setParent(newInternalNode)
-		//left := newInternalNode.inodes[i].left
+	//newInternalNode.inodes[i].child.setParent(newInternalNode)
+	//left := newInternalNode.inodes[i].left
 	//}
 
 	// update original internalNode
@@ -88,5 +100,5 @@ func (in *internalNode) split() (*internalNode, string) {
 	copy(updatedInodes, in.inodes[:midIdx])
 	in.inodes = updatedInodes
 
-	return newInternalNode, midKey
+	return newInternalNode, midKey, midValue
 }
