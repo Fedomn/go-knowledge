@@ -1,9 +1,5 @@
 package btree
 
-import (
-	"errors"
-)
-
 type BPlusTree struct {
 	root   node
 	degree int
@@ -17,27 +13,36 @@ func newTree(degree int) *BPlusTree {
 
 // key points
 // 1. 通过tree的insert最终一定是发生在leafNode上，internalNode上insert只会发生在spill时刻需要上溢节点
-func (tree *BPlusTree) Insert(key int, value int) error {
+func (tree *BPlusTree) Insert(key int, value int) {
 	if tree.root == nil {
 		leafNode := newLeafNode(tree.degree)
 		leafNode.insert(key, value, nil, nil)
 		tree.root = leafNode
-		return nil
+		return
 	}
 
-	// 找到待插入的leafNode
-	ok, _, foundNode := tree.search(tree.root, key)
+	// notFound -> 找到待插入的leafNode
+	// found -> 找到待更新的leafNode / internalNode
+	ok, inodeIdx, foundNode := tree.search(tree.root, key)
 	if ok {
-		return errors.New("already exist same key")
+		switch node := foundNode.(type) {
+		case *leafNode:
+			node.inodes[inodeIdx].value = value
+		case *internalNode:
+			node.inodes[inodeIdx].value = value
+		default:
+			panic("invalid node")
+		}
+		return
 	}
 
 	spilledKey, spilledValue, spilledNode, spilled := foundNode.insert(key, value, nil, nil)
 	if !spilled {
-		return nil
+		return
 	}
 
 	tree.insertIntoParent(foundNode, spilledKey, spilledValue, spilledNode)
-	return nil
+	return
 }
 
 func (tree *BPlusTree) insertIntoParent(leftNode node, key int, value int, rightNode node) {

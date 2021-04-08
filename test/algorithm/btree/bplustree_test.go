@@ -21,10 +21,7 @@ import (
 func TestInsert_Basic(t *testing.T) {
 	tree := newTree(3)
 	for i := 1; i <= 11; i++ {
-		err := tree.Insert(i, i)
-		if err != nil {
-			t.Fatalf("BTree insert error %v", err)
-		}
+		tree.Insert(i, i)
 		t.Logf("After insert %d, PreOrder: %v", i, tree.preOrderTraversal())
 	}
 
@@ -38,10 +35,7 @@ func TestInsert_IntermediateLeafInode(t *testing.T) {
 	testData := []int{1, 15, 22, 9, 20}
 	tree := newTree(4)
 	for _, d := range testData {
-		err := tree.Insert(d, d)
-		if err != nil {
-			t.Fatalf("BTree insert error %v", err)
-		}
+		tree.Insert(d, d)
 		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
 	}
 
@@ -55,15 +49,22 @@ func TestInsert_IntermediateInternalInode(t *testing.T) {
 	testData := []int{1, 15, 32, 9, 20, 22, 23, 16, 17}
 	tree := newTree(4)
 	for _, d := range testData {
-		err := tree.Insert(d, d)
-		if err != nil {
-			t.Fatalf("BTree insert error %v", err)
-		}
+		tree.Insert(d, d)
 		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
 	}
 
 	expectPreOrder := []int{15, 1, 9, 16, 17, 20, 16, 17, 22, 23, 22, 32}
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+func TestInsert_SameKey(t *testing.T) {
+	tree := newTree(10)
+	tree.Insert(1, 1)
+	tree.Insert(1, 10)
+	searchVal, exist := tree.Search(1)
+	if !(exist && searchVal == 10) {
+		t.Fatalf("BTree insert same key but value not replace, got: %v, except: %v", searchVal, 10)
 	}
 }
