@@ -58,7 +58,8 @@ func (l *leafNode) insert(key int, value int, leftNode node, rightNode node) (sp
 		l.inodes = append(l.inodes, leafInode{})
 		copy(l.inodes[idx+1:], l.inodes[idx:])
 	} else {
-		l.inodes = append(l.inodes[idx+1:], l.inodes[idx:]...)
+		// slice is "[ )" pattern
+		l.inodes = append(l.inodes[:idx+1], l.inodes[idx:]...)
 	}
 
 	l.inodes[idx].key = key
