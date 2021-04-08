@@ -1,6 +1,7 @@
 package btree
 
 import (
+	"fmt"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -31,6 +32,8 @@ func TestInsert_Basic(t *testing.T) {
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
+
+	fmt.Println(tree.breadthFirstDraw())
 }
 
 func TestInsert_IntermediateLeafInode(t *testing.T) {
@@ -45,6 +48,8 @@ func TestInsert_IntermediateLeafInode(t *testing.T) {
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
+
+	fmt.Println(tree.breadthFirstDraw())
 }
 
 func TestInsert_IntermediateInternalInode(t *testing.T) {
@@ -59,6 +64,8 @@ func TestInsert_IntermediateInternalInode(t *testing.T) {
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
+
+	fmt.Println(tree.breadthFirstDraw())
 }
 
 func TestInsert_SameKey(t *testing.T) {

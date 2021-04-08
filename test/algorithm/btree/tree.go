@@ -1,5 +1,10 @@
 package btree
 
+import (
+	"strconv"
+	"strings"
+)
+
 type BPlusTree struct {
 	root   node
 	degree int
@@ -147,4 +152,82 @@ func preOrderWalk(cursor node, result *[]int) {
 	default:
 		panic("invalid node")
 	}
+}
+
+// for draw
+// use tools: https://projects.calebevans.me/b-sketcher/
+func (tree *BPlusTree) breadthFirstWalk() []node {
+	bfsResult := make([]node, 0)
+	stack := make([]node, 0)
+	// push
+	stack = append(stack, tree.root)
+	for len(stack) > 0 {
+		// pop
+		n := len(stack)
+		cursor := stack[n-1]
+		// into bfsResult
+		bfsResult = append(bfsResult, cursor)
+		stack = stack[:n-1]
+
+		// stack为空，代表这一层出栈完了，可以添加分隔符了
+		if len(stack) == 0 {
+			bfsResult = append(bfsResult, nil)
+		}
+
+		switch node := cursor.(type) {
+		case *leafNode:
+			// impossible to happen
+			continue
+		case *internalNode:
+			// stack 后进先出，所以从后往前 append
+			for i := len(node.inodes) - 1; i >= 0; i-- {
+				inode := node.inodes[i]
+				// push
+				if i == len(node.inodes)-1 {
+					stack = append(stack, inode.right)
+				}
+				stack = append(stack, inode.left)
+			}
+		default:
+			panic("invalid node")
+		}
+	}
+	return bfsResult
+}
+
+func (tree *BPlusTree) breadthFirstDraw() string {
+	var result = ""
+	walkNodes := tree.breadthFirstWalk()
+	for _, cursor := range walkNodes {
+		switch node := cursor.(type) {
+		case *leafNode:
+			for idx, inode := range node.inodes {
+				result += strconv.Itoa(inode.key)
+				if idx < len(node.inodes)-1 {
+					result += ","
+				}
+			}
+		case *internalNode:
+			for idx, inode := range node.inodes {
+				result += strconv.Itoa(inode.key)
+				if idx < len(node.inodes)-1 {
+					result += ","
+				}
+			}
+		case nil:
+			result += "\n"
+		default:
+			panic("invalid node")
+		}
+		result += "/"
+	}
+
+	// clean unnecessary separator /
+	newResult := ""
+	splits := strings.Split(result, "\n")
+	for _, each := range splits {
+		newResult += strings.Trim(each, "/")
+		newResult += "\n"
+	}
+	return strings.TrimSuffix(newResult, "\n")
 }
