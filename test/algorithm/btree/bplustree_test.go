@@ -1,8 +1,10 @@
 package btree
 
 import (
+	"math/rand"
 	"reflect"
 	"testing"
+	"time"
 )
 
 // https://en.wikipedia.org/wiki/B%2B_tree
@@ -67,4 +69,40 @@ func TestInsert_SameKey(t *testing.T) {
 	if !(exist && searchVal == 10) {
 		t.Fatalf("BTree insert same key but value not replace, got: %v, except: %v", searchVal, 10)
 	}
+}
+
+func TestInsert_RandomInsertion(t *testing.T) {
+	tree := newTree(10)
+	rand.Seed(time.Now().UnixNano())
+	existMap := make(map[int]bool, 0)
+	duplicatedList := make([]int, 0)
+	for i := 0; i < 300; i++ {
+		randInt := rand.Intn(1000)
+		if existMap[randInt] {
+			duplicatedList = append(duplicatedList, randInt)
+		} else {
+			existMap[randInt] = true
+		}
+
+		tree.Insert(randInt, randInt)
+	}
+	insertedCount := len(unique(tree.preOrderTraversal()))
+	t.Logf("inserted count: %d", insertedCount)
+	t.Logf("duplicated keys: %v", duplicatedList)
+
+	if insertedCount != (300 - len(duplicatedList)) {
+		t.Fatalf("BTree random insert count incorrect")
+	}
+}
+
+func unique(intSlice []int) []int {
+	keys := make(map[int]bool)
+	var list []int
+	for _, entry := range intSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
