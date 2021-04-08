@@ -61,8 +61,9 @@ func (in *internalNode) insert(key int, value int, leftNode node, rightNode node
 		in.inodes = append(in.inodes, internalInode{})
 		copy(in.inodes[idx+1:], in.inodes[idx:])
 	} else {
-		in.inodes = append(in.inodes[idx+1:], in.inodes[idx:]...)
-		// in.inodes = append(in.inodes[idx+1:], in.inodes[idx:len(in.inodes)]...)
+		in.inodes = append(in.inodes[:idx+1], in.inodes[idx:]...)
+		// 插入中间的 internal node，需要更新next inode的left
+		in.inodes[idx+1].left = rightNode
 	}
 
 	in.inodes[idx].key = key

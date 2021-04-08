@@ -50,3 +50,20 @@ func TestInsert_IntermediateLeafInode(t *testing.T) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
 }
+
+func TestInsert_IntermediateInternalInode(t *testing.T) {
+	testData := []int{1, 15, 32, 9, 20, 22, 23, 16, 17}
+	tree := newTree(4)
+	for _, d := range testData {
+		err := tree.Insert(d, d)
+		if err != nil {
+			t.Fatalf("BTree insert error %v", err)
+		}
+		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
+	}
+
+	expectPreOrder := []int{15, 1, 9, 16, 17, 20, 16, 17, 22, 23, 22, 32}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
+		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
