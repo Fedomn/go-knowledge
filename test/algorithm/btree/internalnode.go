@@ -87,14 +87,7 @@ func (in *internalNode) split() (node, int, int) {
 
 	// new internalNode as rightBranch
 	newInternalNode := newInternalNode(in.degree)
-	// TODO
 	newInternalNode.inodes = append(newInternalNode.inodes[0:], in.inodes[midIdx+1:]...)
-
-	// update new internal node children's parent
-	//for i := 0; i < len(newInternalNode.inodes); i++ {
-	//newInternalNode.inodes[i].child.setParent(newInternalNode)
-	//left := newInternalNode.inodes[i].left
-	//}
 
 	// update original internalNode
 	updatedInodes := make([]internalInode, midIdx)
