@@ -96,3 +96,109 @@ func (in *internalNode) split() (node, int, int) {
 
 	return newInternalNode, midKey, midValue
 }
+
+func (in *internalNode) count() int {
+	return len(in.inodes)
+}
+
+func (in *internalNode) largerOrEqualsThanHalfDegree() bool {
+	return in.count() >= in.degree/2
+}
+
+func (in *internalNode) smallerThanHalfDegree() bool {
+	return in.count() < in.degree/2
+}
+
+func (in *internalNode) delete(deletedKey int, deletedInodeIdx int) {
+	if in.inodes[deletedInodeIdx].left.largerOrEqualsThanHalfDegree() {
+		// 取前驱的最大值
+		key, value, inodeIdx, leafNode := in.predecessorMax(deletedInodeIdx)
+		in.inodes[deletedInodeIdx].key = key
+		in.inodes[deletedInodeIdx].value = value
+		leafNode.delete(key, inodeIdx)
+	} else if in.inodes[deletedInodeIdx].right.largerOrEqualsThanHalfDegree() {
+		// 取后继的最小值
+		key, value, inodeIdx, leafNode := in.successorMin(deletedInodeIdx)
+		in.inodes[deletedInodeIdx].key = key
+		in.inodes[deletedInodeIdx].value = value
+		leafNode.delete(key, inodeIdx)
+	} else {
+		// merge left and right branch
+		// 将right branch copy到left branch，并将deletedKey的next key的left node指向 待merge的left branch
+		rightBranch := in.inodes[deletedInodeIdx].right
+		leftBranch := in.inodes[deletedInodeIdx].left
+		switch right := rightBranch.(type) {
+		case *leafNode:
+			left := leftBranch.(*leafNode)
+			left.inodes = append(left.inodes, right.inodes...)
+
+			if deletedInodeIdx != len(in.inodes)-1 {
+				in.inodes[deletedInodeIdx+1].left = left
+				in.inodes = append(in.inodes[:deletedInodeIdx], in.inodes[deletedInodeIdx+1:]...)
+			}
+			// TODO need to handle more complex condition, now we not consider root and some corner condition
+		case *internalNode:
+			left := leftBranch.(*internalNode)
+			left.inodes = append(left.inodes, right.inodes...)
+
+			if deletedInodeIdx != len(in.inodes)-1 {
+				in.inodes[deletedInodeIdx+1].left = left
+				in.inodes = append(in.inodes[:deletedInodeIdx], in.inodes[deletedInodeIdx+1:]...)
+			}
+			// TODO need to handle more complex condition, now we not consider root and some corner condition
+		default:
+			panic("invalid node")
+		}
+	}
+}
+
+func (in *internalNode) predecessorMax(deletedInodeIdx int) (key int, value int, inodeIdx int, node *leafNode) {
+	// 当前node的前驱nodes里的最大值
+	cursor := in.inodes[deletedInodeIdx].left
+	for {
+		switch node := cursor.(type) {
+		case *leafNode:
+			inode := node.inodes[node.count()-1]
+			return inode.key, inode.value, node.count() - 1, node
+		case *internalNode:
+			cursor = node.inodes[node.count()-1].left
+		default:
+			panic("invalid node")
+		}
+	}
+}
+
+func (in *internalNode) successorMin(deletedInodeIdx int) (key int, value int, inodeIdx int, node *leafNode) {
+	// 当前node的后继nodes里的最小值
+	cursor := in.inodes[deletedInodeIdx].right
+	for {
+		switch node := cursor.(type) {
+		case *leafNode:
+			inode := node.inodes[0]
+			return inode.key, inode.value, 0, node
+		case *internalNode:
+			cursor = node.inodes[node.count()-1].right
+		default:
+			panic("invalid node")
+		}
+	}
+}
+
+func (in *internalNode) sibling(leafInodeKey int) (leftSibling, rightSibling node, leftSiblingIdx, rightSiblingIdx int) {
+	firstLargerKeyIdx, _ := in.find(leafInodeKey)
+	// left sub-tree keys < node-key <= right sub-tree keys
+
+	if firstLargerKeyIdx == 0 {
+		// first larger key idx = 0，所以只有右兄弟
+		return nil, in.inodes[0].right, -1, 0
+	} else if firstLargerKeyIdx == len(in.inodes) {
+		// first larger key idx 不存在，所有只有左兄弟
+		return in.inodes[len(in.inodes)-1].left, nil, len(in.inodes) - 1, -1
+	} else {
+		leftSibling = in.inodes[firstLargerKeyIdx-1].left
+		rightSibling = in.inodes[firstLargerKeyIdx].right
+		leftSiblingIdx = firstLargerKeyIdx - 1
+		rightSiblingIdx = firstLargerKeyIdx
+		return
+	}
+}

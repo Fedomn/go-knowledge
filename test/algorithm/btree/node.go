@@ -8,4 +8,8 @@ type node interface {
 	parent() *internalNode
 	setParent(*internalNode)
 	full() bool
+	count() int
+	delete(deletedKey int, inodeIdx int)
+	largerOrEqualsThanHalfDegree() bool
+	smallerThanHalfDegree() bool
 }

@@ -1,6 +1,7 @@
 package btree
 
 import (
+	"fmt"
 	"sort"
 )
 
@@ -87,4 +88,100 @@ func (l *leafNode) split() (node, int, int) {
 	l.inodes = updatedInodes
 
 	return newLeafNode, midKey, midValue
+}
+
+func (l *leafNode) count() int {
+	return len(l.inodes)
+}
+
+func (l *leafNode) largerOrEqualsThanHalfDegree() bool {
+	return l.count() >= l.degree/2
+}
+
+func (l *leafNode) smallerThanHalfDegree() bool {
+	return l.count() < l.degree/2
+}
+
+func (l *leafNode) delete(key int, inodeIdx int) {
+	l.inodes = append(l.inodes[:inodeIdx], l.inodes[inodeIdx+1:]...)
+	if l.smallerThanHalfDegree() {
+		// 1. borrow from left sibling node or right sibling node
+		leftSibling, rightSibling, leftSiblingIdx, rightSiblingIdx := l.parent().sibling(key)
+
+		if leftSibling != nil && leftSibling.largerOrEqualsThanHalfDegree() {
+			l.borrowFromLeftSibling(leftSibling, leftSiblingIdx)
+		} else if rightSibling != nil && rightSibling.largerOrEqualsThanHalfDegree() {
+			l.borrowFromRightSibling(rightSibling, rightSiblingIdx)
+		} else {
+			// 2. If both the immediate sibling nodes already have a minimum number of keys,
+			// then merge the node with either the left sibling node or the right sibling node.
+			if leftSibling != nil {
+				l.mergeLeftSibling(leftSibling, leftSiblingIdx)
+			} else if rightSibling != nil {
+				l.mergeRightSibling(rightSibling, rightSiblingIdx)
+			}
+		}
+	}
+}
+
+func (l *leafNode) borrowFromLeftSibling(leftSibling node, leftSiblingIdx int) {
+	fmt.Println("borrowFromLeftSibling")
+	parentNode := l.parent()
+	inode := parentNode.inodes[leftSiblingIdx]
+	l.insert(inode.key, inode.value, nil, nil)
+
+	// rotate leftSiblingNode last inode to parent inode
+	leftSiblingNode := leftSibling.(*leafNode)
+	deletedLeafInode := leftSiblingNode.inodes[leftSiblingNode.count()-1]
+	parentNode.inodes[leftSiblingIdx].key = deletedLeafInode.key
+	parentNode.inodes[leftSiblingIdx].value = deletedLeafInode.value
+
+	// delete leftSiblingNode last inode
+	leftSiblingNode.inodes = leftSiblingNode.inodes[:leftSiblingNode.count()-1]
+}
+
+func (l *leafNode) borrowFromRightSibling(rightSibling node, rightSiblingIdx int) {
+	fmt.Println("borrowFromRightSibling")
+	parentNode := l.parent()
+	inode := parentNode.inodes[rightSiblingIdx]
+	l.insert(inode.key, inode.value, nil, nil)
+
+	// rotate rightSiblingNode first inode to parent inode
+	rightSiblingNode := rightSibling.(*leafNode)
+	deletedLeafInode := rightSiblingNode.inodes[0]
+	parentNode.inodes[rightSiblingIdx].key = deletedLeafInode.key
+	parentNode.inodes[rightSiblingIdx].value = deletedLeafInode.value
+
+	// delete rightSiblingNode first inode
+	rightSiblingNode.inodes = rightSiblingNode.inodes[1:]
+}
+
+func (l *leafNode) mergeLeftSibling(leftSibling node, leftSiblingIdx int) {
+	fmt.Println("mergeLeftSibling")
+
+	parentNode := l.parent()
+	inode := parentNode.inodes[leftSiblingIdx]
+
+	parentNode.inodes[leftSiblingIdx+1].left = leftSibling
+
+	leftSibling.insert(inode.key, inode.value, nil, nil)
+	for _, leafInode := range l.inodes {
+		leftSibling.insert(leafInode.key, leafInode.value, nil, nil)
+	}
+	parentNode.inodes = append(parentNode.inodes[:leftSiblingIdx], parentNode.inodes[leftSiblingIdx+1:]...)
+}
+
+func (l *leafNode) mergeRightSibling(rightSibling node, rightSiblingIdx int) {
+	fmt.Println("mergeRightSibling")
+
+	parentNode := l.parent()
+	inode := parentNode.inodes[rightSiblingIdx]
+
+	parentNode.inodes[rightSiblingIdx+1].left = rightSibling
+
+	rightSibling.insert(inode.key, inode.value, nil, nil)
+	for _, leafInode := range l.inodes {
+		rightSibling.insert(leafInode.key, leafInode.value, nil, nil)
+	}
+	parentNode.inodes = append(parentNode.inodes[:rightSiblingIdx], parentNode.inodes[rightSiblingIdx+1:]...)
 }

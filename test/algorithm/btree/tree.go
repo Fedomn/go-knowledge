@@ -16,7 +16,7 @@ func newTree(degree int) *BPlusTree {
 	}
 }
 
-// key points
+// Insert key points
 // 1. 通过tree的insert最终一定是发生在leafNode上，internalNode上insert只会发生在spill时刻需要上溢节点
 func (tree *BPlusTree) Insert(key int, value int) {
 	if tree.root == nil {
@@ -79,6 +79,22 @@ func (tree *BPlusTree) insertIntoParent(leftNode node, key int, value int, right
 		}
 	}
 	tree.insertIntoParent(leftNodeParent, pSpilledKey, pSpilledValue, pSpilledNode)
+}
+
+func (tree *BPlusTree) Delete(key int) {
+	ok, inodeIdx, foundNode := tree.search(tree.root, key)
+	if !ok {
+		return
+	}
+
+	switch node := foundNode.(type) {
+	case *leafNode:
+		node.delete(key, inodeIdx)
+	case *internalNode:
+		node.delete(key, inodeIdx)
+	default:
+		panic("invalid node")
+	}
 }
 
 func (tree BPlusTree) Search(key int) (int, bool) {
@@ -159,19 +175,16 @@ func preOrderWalk(cursor node, result *[]int) {
 func (tree *BPlusTree) breadthFirstWalk() []node {
 	bfsResult := make([]node, 0)
 	stack := make([]node, 0)
-	// push
+	nextLayerStack := make([]node, 0)
 	stack = append(stack, tree.root)
 	for len(stack) > 0 {
-		// pop
-		n := len(stack)
-		cursor := stack[n-1]
+		cursor := stack[0]
 		// into bfsResult
 		bfsResult = append(bfsResult, cursor)
-		stack = stack[:n-1]
-
-		// stack为空，代表这一层出栈完了，可以添加分隔符了
-		if len(stack) == 0 {
-			bfsResult = append(bfsResult, nil)
+		if len(stack) >= 1 {
+			stack = stack[1:]
+		} else {
+			stack = []node{}
 		}
 
 		switch node := cursor.(type) {
@@ -179,17 +192,22 @@ func (tree *BPlusTree) breadthFirstWalk() []node {
 			// impossible to happen
 			continue
 		case *internalNode:
-			// stack 后进先出，所以从后往前 append
-			for i := len(node.inodes) - 1; i >= 0; i-- {
+			for i := 0; i < len(node.inodes); i++ {
 				inode := node.inodes[i]
-				// push
+				nextLayerStack = append(nextLayerStack, inode.left)
 				if i == len(node.inodes)-1 {
-					stack = append(stack, inode.right)
+					nextLayerStack = append(nextLayerStack, inode.right)
 				}
-				stack = append(stack, inode.left)
 			}
 		default:
 			panic("invalid node")
+		}
+
+		// stack为空，代表这一层出栈完了，可以添加分隔符了
+		if len(stack) == 0 {
+			bfsResult = append(bfsResult, nil)
+			stack = nextLayerStack
+			nextLayerStack = make([]node, 0)
 		}
 	}
 	return bfsResult
