@@ -1,6 +1,7 @@
 package btree
 
 import (
+	"fmt"
 	"sort"
 )
 
@@ -109,19 +110,31 @@ func (in *internalNode) smallerThanHalfDegree() bool {
 	return in.count() < in.degree/2
 }
 
-func (in *internalNode) delete(deletedKey int, deletedInodeIdx int) {
-	if in.inodes[deletedInodeIdx].left.largerOrEqualsThanHalfDegree() {
+func (in *internalNode) delete(deletedKey int, deletedInodeIdx int) (freeRoot bool, newRoot node) {
+	_, _, _, predecessorNode := in.predecessorMax(deletedInodeIdx)
+	_, _, _, successorNode := in.successorMin(deletedInodeIdx)
+	//if in.inodes[deletedInodeIdx].left.largerOrEqualsThanHalfDegree() {
+	if predecessorNode.largerOrEqualsThanHalfDegree() {
+		fmt.Println("borrowLeft")
 		// 取前驱的最大值
 		key, value, inodeIdx, leafNode := in.predecessorMax(deletedInodeIdx)
 		in.inodes[deletedInodeIdx].key = key
 		in.inodes[deletedInodeIdx].value = value
+		// FIXME 先删除inode 再rebalance ?
+		//leafNode.inodes = append(leafNode.inodes[:inodeIdx], leafNode.inodes[inodeIdx+1:]...)
 		leafNode.delete(key, inodeIdx)
-	} else if in.inodes[deletedInodeIdx].right.largerOrEqualsThanHalfDegree() {
+		return false, nil
+		//} else if in.inodes[deletedInodeIdx].right.largerOrEqualsThanHalfDegree() {
+	} else if successorNode.largerOrEqualsThanHalfDegree() {
+		fmt.Println("borrowRight")
 		// 取后继的最小值
 		key, value, inodeIdx, leafNode := in.successorMin(deletedInodeIdx)
 		in.inodes[deletedInodeIdx].key = key
 		in.inodes[deletedInodeIdx].value = value
+		// FIXME 先删除inode 再rebalance ?
+		//leafNode.inodes = append(leafNode.inodes[:inodeIdx], leafNode.inodes[inodeIdx+1:]...)
 		leafNode.delete(key, inodeIdx)
+		return false, nil
 	} else {
 		// merge left and right branch
 		// 将right branch copy到left branch，并将deletedKey的next key的left node指向 待merge的left branch
@@ -137,6 +150,7 @@ func (in *internalNode) delete(deletedKey int, deletedInodeIdx int) {
 				in.inodes = append(in.inodes[:deletedInodeIdx], in.inodes[deletedInodeIdx+1:]...)
 			}
 			// TODO need to handle more complex condition, now we not consider root and some corner condition
+			return false, nil
 		case *internalNode:
 			left := leftBranch.(*internalNode)
 			left.inodes = append(left.inodes, right.inodes...)
@@ -145,6 +159,17 @@ func (in *internalNode) delete(deletedKey int, deletedInodeIdx int) {
 				in.inodes[deletedInodeIdx+1].left = left
 				in.inodes = append(in.inodes[:deletedInodeIdx], in.inodes[deletedInodeIdx+1:]...)
 			}
+
+			if in.parent() == nil {
+				// reset tree root
+				return true, left
+			}
+
+			if len(in.inodes) == 0 && in.parent() == nil {
+
+			}
+
+			return false, nil
 			// TODO need to handle more complex condition, now we not consider root and some corner condition
 		default:
 			panic("invalid node")
@@ -161,7 +186,7 @@ func (in *internalNode) predecessorMax(deletedInodeIdx int) (key int, value int,
 			inode := node.inodes[node.count()-1]
 			return inode.key, inode.value, node.count() - 1, node
 		case *internalNode:
-			cursor = node.inodes[node.count()-1].left
+			cursor = node.inodes[node.count()-1].right
 		default:
 			panic("invalid node")
 		}
@@ -177,7 +202,7 @@ func (in *internalNode) successorMin(deletedInodeIdx int) (key int, value int, i
 			inode := node.inodes[0]
 			return inode.key, inode.value, 0, node
 		case *internalNode:
-			cursor = node.inodes[node.count()-1].right
+			cursor = node.inodes[0].left
 		default:
 			panic("invalid node")
 		}

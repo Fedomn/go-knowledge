@@ -102,7 +102,7 @@ func (l *leafNode) smallerThanHalfDegree() bool {
 	return l.count() < l.degree/2
 }
 
-func (l *leafNode) delete(key int, inodeIdx int) {
+func (l *leafNode) delete(key int, inodeIdx int) (freeRoot bool, newRoot node) {
 	l.inodes = append(l.inodes[:inodeIdx], l.inodes[inodeIdx+1:]...)
 	if l.smallerThanHalfDegree() {
 		// 1. borrow from left sibling node or right sibling node
@@ -122,6 +122,8 @@ func (l *leafNode) delete(key int, inodeIdx int) {
 			}
 		}
 	}
+	// not consider these
+	return false, nil
 }
 
 func (l *leafNode) borrowFromLeftSibling(leftSibling node, leftSiblingIdx int) {

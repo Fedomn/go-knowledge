@@ -9,7 +9,7 @@ type node interface {
 	setParent(*internalNode)
 	full() bool
 	count() int
-	delete(deletedKey int, inodeIdx int)
+	delete(deletedKey int, inodeIdx int) (freeRoot bool, newRoot node)
 	largerOrEqualsThanHalfDegree() bool
 	smallerThanHalfDegree() bool
 }

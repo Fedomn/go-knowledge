@@ -91,7 +91,9 @@ func (tree *BPlusTree) Delete(key int) {
 	case *leafNode:
 		node.delete(key, inodeIdx)
 	case *internalNode:
-		node.delete(key, inodeIdx)
+		if freeRoot, newRoot := node.delete(key, inodeIdx); freeRoot {
+			tree.root = newRoot
+		}
 	default:
 		panic("invalid node")
 	}

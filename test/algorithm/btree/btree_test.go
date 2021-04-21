@@ -150,7 +150,7 @@ func TestDelete_LeafNode_And_BorrowFromLeftSibling(t *testing.T) {
 	tree.Delete(19)
 	fmt.Println(tree.breadthFirstDraw())
 
-	expectPreOrder := []int{19, 1, 16, 20, 23, 20, 28, 32}
+	expectPreOrder := []int{9, 1, 15, 20, 23, 15, 20, 28, 32}
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
@@ -205,121 +205,92 @@ func TestDelete_LeafNode_And_MergeLeftSibling(t *testing.T) {
 	}
 }
 
-//func TestDelete_InternalNode_BorrowLeft(t *testing.T) {
-//	testData := []int{1, 3, 4, 6, 8, 11, 22, 33, 44, 55, 66}
-//	tree := newTree(6)
+func TestDelete_InternalNode_BorrowLeft(t *testing.T) {
+	testData := []int{1, 5, 9, 14, 18, 22, 28, 33, 37, 41, 46, 50, 54, 59, 61, 64, 67, 72}
+	tree := newTree(4)
+	for _, d := range testData {
+		tree.Insert(d, d)
+	}
+	fmt.Println(tree.breadthFirstDraw())
+
+	fmt.Println("----------")
+	tree.Delete(9)
+	fmt.Println(tree.breadthFirstDraw())
+
+	expectPreOrderAfterDelete := []int{37, 14, 1, 5, 18, 22, 18, 28, 33, 50, 41, 46, 54, 59, 61, 54, 59, 64, 67, 72}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
+		t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+func TestDelete_InternalNode_BorrowRight(t *testing.T) {
+	testData := []int{1, 5, 9, 14, 18, 22, 28, 33, 37, 41, 46, 50, 54, 59, 61, 64, 67, 72}
+	tree := newTree(4)
+	for _, d := range testData {
+		tree.Insert(d, d)
+	}
+	fmt.Println(tree.breadthFirstDraw())
+	tree.Delete(9)
+	fmt.Println(tree.breadthFirstDraw())
+
+	fmt.Println("----------")
+	tree.Delete(5)
+	fmt.Println(tree.breadthFirstDraw())
+
+	expectPreOrderAfterDelete := []int{37, 22, 1, 14, 18, 28, 33, 50, 41, 46, 54, 59, 61, 54, 59, 64, 67, 72}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
+		t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+func TestDelete_InternalNode_MergeLeftRightLeafNode(t *testing.T) {
+	testData := []int{1, 5, 9, 14, 18, 22, 28, 33, 37, 41, 46, 50, 54, 59, 61, 64, 67, 72}
+	tree := newTree(4)
+	for _, d := range testData {
+		tree.Insert(d, d)
+	}
+	fmt.Println(tree.breadthFirstDraw())
+	tree.Delete(9)
+	fmt.Println(tree.breadthFirstDraw())
+	tree.Delete(5)
+	fmt.Println(tree.breadthFirstDraw())
+
+	fmt.Println("----------")
+	tree.Delete(14)
+	fmt.Println(tree.breadthFirstDraw())
+
+	expectPreOrderAfterDelete := []int{37, 22, 1, 18, 28, 33, 50, 41, 46, 54, 59, 61, 54, 59, 64, 67, 72}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
+		t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+// FIXME
+//func TestDelete_InternalNode_MergeLeftRightInternalNode(t *testing.T) {
+//	testData := []int{1, 5, 9, 14, 18, 22, 28, 33, 37, 41, 46, 50, 54, 59, 61, 64, 67, 72}
+//	tree := newTree(4)
 //	for _, d := range testData {
 //		tree.Insert(d, d)
-//		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
 //	}
-//
+//	fmt.Println(tree.breadthFirstDraw())
+//	tree.Delete(37)
+//	fmt.Println(tree.breadthFirstDraw())
+//	tree.Delete(33)
 //	fmt.Println(tree.breadthFirstDraw())
 //
-//	expectPreOrder := []int{6, 1, 3, 4, 8, 11, 22, 33, 8, 11, 22, 44, 55, 66}
-//	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
-//		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	}
-//
-//	tree.Delete(6)
+//	tree.Delete(28)
 //	fmt.Println(tree.breadthFirstDraw())
-//	expectPreOrderAfterDelete := []int{4, 1, 3, 8, 11, 22, 33, 8, 11, 22, 44, 55, 66}
+//
+//	tree.Delete(22)
+//	fmt.Println(tree.breadthFirstDraw())
+//
+//	fmt.Println("----------")
+//	// FIXME
+//	tree.Delete(18)
+//	fmt.Println(tree.breadthFirstDraw())
+//
+//	expectPreOrderAfterDelete := []int{37, 22, 1, 18, 28, 33, 50, 41, 46, 54, 59, 61, 54, 59, 64, 67, 72}
 //	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
 //		t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
 //	}
-//}
-//
-//func TestDelete_InternalNode_BorrowRight(t *testing.T) {
-//	testData := []int{1, 3, 4, 6, 8, 11, 22, 33, 44, 55, 66}
-//	tree := newTree(6)
-//	for _, d := range testData {
-//		tree.Insert(d, d)
-//		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
-//	}
-//
-//	expectPreOrder := []int{6, 1, 3, 4, 8, 11, 22, 33, 8, 11, 22, 44, 55, 66}
-//	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
-//		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	}
-//
-//	// to construct borrow right branch condition
-//	tree.Delete(6)
-//	fmt.Println(tree.breadthFirstDraw())
-//
-//	tree.Delete(4)
-//	fmt.Println(tree.breadthFirstDraw())
-//
-//	expectPreOrderAfterDelete := []int{4, 1, 3, 8, 11, 22, 33, 8, 11, 22, 44, 55, 66}
-//	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
-//		t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	}
-//}
-//
-//func TestDelete_InternalNode_MergeLeafNode(t *testing.T) {
-//	testData := []int{1, 3, 4, 6, 8, 11, 22, 33, 44, 55, 66}
-//	tree := newTree(6)
-//	for _, d := range testData {
-//		tree.Insert(d, d)
-//		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
-//	}
-//
-//	expectPreOrder := []int{6, 1, 3, 4, 8, 11, 22, 33, 8, 11, 22, 44, 55, 66}
-//	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
-//		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	}
-//
-//	// to construct merge left and right branch condition
-//	tree.Delete(6)
-//	fmt.Println(tree.breadthFirstDraw())
-//	tree.Delete(4)
-//	fmt.Println(tree.breadthFirstDraw())
-//
-//	tree.Delete(8)
-//	fmt.Println(tree.breadthFirstDraw())
-//	expectPreOrderAfterDelete := []int{33, 1, 3, 11, 22, 44, 55, 66}
-//	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
-//		t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	}
-//}
-//
-//func TestDelete_InternalNode_MergeInternalNode(t *testing.T) {
-//	tree := newTree(6)
-//	for i := 1; i <= 55; i++ {
-//		if i%2 != 0 {
-//			tree.Insert(i, i)
-//			t.Logf("After insert %d, PreOrder: %v", i, tree.preOrderTraversal())
-//		}
-//	}
-//	fmt.Println(tree.breadthFirstDraw())
-//
-//	tree.Delete(23)
-//	tree.Delete(15)
-//	tree.Delete(13)
-//	fmt.Println(tree.breadthFirstDraw())
-//
-//	tree.Delete(31)
-//	fmt.Println(tree.breadthFirstDraw())
-//
-//	//testData := []int{1, 3, 4, 6, 8, 11, 22, 33, 44, 55, 66}
-//	//for _, d := range testData {
-//	//	tree.Insert(d, d)
-//	//	t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
-//	//}
-//	//
-//	//expectPreOrder := []int{6, 1, 3, 4, 8, 11, 22, 33, 8, 11, 22, 44, 55, 66}
-//	//if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
-//	//	t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	//}
-//	//
-//	//// to construct merge left and right branch condition
-//	//tree.Delete(6)
-//	//fmt.Println(tree.breadthFirstDraw())
-//	//tree.Delete(4)
-//	//fmt.Println(tree.breadthFirstDraw())
-//	//
-//	//tree.Delete(8)
-//	//fmt.Println(tree.breadthFirstDraw())
-//	//expectPreOrderAfterDelete := []int{33, 1, 3, 11, 22, 44, 55, 66}
-//	//if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrderAfterDelete) {
-//	//	t.Fatalf("BTree delete incorrect, got preOrder: %v", tree.preOrderTraversal())
-//	//}
 //}
