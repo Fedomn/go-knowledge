@@ -15,7 +15,7 @@ func TestInsert_Basic(t *testing.T) {
 		t.Logf("BFS: \n%s", tree.breadthFirstDraw())
 	}
 
-	expectPreOrder := []int{3, 1, 2, 4, 5, 6, 4, 5, 7, 8, 9, 10, 11}
+	expectPreOrder := []int{3, 1, 2, 6, 4, 5, 7, 8, 9, 10, 11}
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
@@ -30,7 +30,7 @@ func TestInsert_IntermediateLeafInode(t *testing.T) {
 		t.Logf("BFS: \n%s", tree.breadthFirstDraw())
 	}
 
-	expectPreOrder := []int{15, 1, 9, 19, 20, 22, 19, 20, 30, 40, 55}
+	expectPreOrder := []int{15, 1, 9, 22, 19, 20, 30, 40, 55}
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
@@ -45,7 +45,7 @@ func TestInsert_IntermediateInternalInode(t *testing.T) {
 		t.Logf("BFS: \n%s", tree.breadthFirstDraw())
 	}
 
-	expectPreOrder := []int{15, 1, 9, 10, 16, 17, 16, 18, 20, 22, 18, 20, 23, 32}
+	expectPreOrder := []int{15, 1, 9, 10, 17, 16, 22, 18, 20, 23, 32}
 	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
 		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
 	}
@@ -63,7 +63,13 @@ func TestInsert_SameKey(t *testing.T) {
 	}
 }
 
-func TestInsert_RandomInsertion(t *testing.T) {
+func Benchmark_Insert_RandomInsertion(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		randomInsertion(b)
+	}
+}
+
+func randomInsertion(b *testing.B) {
 	tree := newBtree(4)
 	rand.Seed(time.Now().UnixNano())
 	existMap := make(map[int]bool, 0)
@@ -78,25 +84,26 @@ func TestInsert_RandomInsertion(t *testing.T) {
 
 		tree.insert(randInt)
 	}
-	insertedCount := len(unique(tree.preOrderTraversal()))
-	t.Logf("inserted count: %d", insertedCount)
-	t.Logf("duplicated keys: %v", duplicatedList)
-
-	t.Logf("BFS:\n%s", tree.breadthFirstDraw())
+	insertedCount := len(tree.preOrderTraversal())
 
 	if insertedCount != (300 - len(duplicatedList)) {
-		t.Fatalf("BTree random insert count incorrect")
+		b.Logf("BTree random insert count incorrect\n")
+		b.Logf("insertedCount: %d, duplicatedList: %d, sum: %d, existMap: %d\n", insertedCount, len(duplicatedList), insertedCount+len(duplicatedList), len(existMap))
+		b.Logf("duplicatedValues: %v\n", filterDuplicatedValues(tree.preOrderTraversal()))
+		b.Logf("BFS:\n%s", tree.breadthFirstDraw())
+		b.Fatal("Done")
 	}
 }
 
-func unique(intSlice []int) []int {
+func filterDuplicatedValues(intSlice []int) []int {
 	keys := make(map[int]bool)
-	var list []int
+	var duplicatedValues []int
 	for _, entry := range intSlice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
-			list = append(list, entry)
+		} else {
+			duplicatedValues = append(duplicatedValues, entry)
 		}
 	}
-	return list
+	return duplicatedValues
 }

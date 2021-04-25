@@ -1,7 +1,6 @@
 package v2
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -26,14 +25,13 @@ func (b *btree) insert(key int) {
 		return
 	}
 
-	// ignore duplicated key
-	if _, found := b.root.search(key); found {
-		fmt.Printf("Encounter duplicated key: %d\n", key)
-		return
-	}
-
 	// node's keys already full, then grows tree's height
 	if b.root.isFull() {
+		// ignore duplicated key
+		if b.root.hasDuplicatedKey(key) {
+			return
+		}
+
 		// create new root
 		n := newNode(b.t, false)
 		n.children[0] = b.root
@@ -73,7 +71,9 @@ func (b *btree) preOrderWalk(cursor *node, result *[]int) {
 		for i := 0; i < cursor.count; i++ {
 			*result = append(*result, cursor.keys[i])
 			b.preOrderWalk(cursor.children[i], result)
-			b.preOrderWalk(cursor.children[i+1], result)
+			if i == cursor.count-1 {
+				b.preOrderWalk(cursor.children[i+1], result)
+			}
 		}
 	}
 }

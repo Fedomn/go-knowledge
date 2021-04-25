@@ -35,6 +35,15 @@ func (n *node) isFull() bool {
 	return n.count == n.t*2-1
 }
 
+func (n *node) hasDuplicatedKey(key int) bool {
+	for _, k := range n.keys {
+		if key == k {
+			return true
+		}
+	}
+	return false
+}
+
 // find the first key greater than or equal to k
 // return 0 when k <= first smallest key
 // return count when k > last largest key
@@ -118,6 +127,11 @@ func (n *node) insertNonFull(key int) {
 	idx := n.count - 1
 
 	if n.isLeaf {
+		// ignore duplicated key
+		if n.hasDuplicatedKey(key) {
+			return
+		}
+
 		// from rightmost to left, find the location of new key to be inserted
 		// move all greater keys to right as finding loop
 		for idx >= 0 && n.keys[idx] > key {
@@ -131,6 +145,11 @@ func (n *node) insertNonFull(key int) {
 		// find the child which will have the new key
 		for idx >= 0 && n.keys[idx] > key {
 			idx--
+		}
+
+		// ignore duplicated key
+		if n.hasDuplicatedKey(key) || n.children[idx+1].hasDuplicatedKey(key) {
+			return
 		}
 
 		// idx is the first larger index than key, so will insert to rightNode
