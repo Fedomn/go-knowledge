@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -52,9 +53,40 @@ func (b *btree) insert(key int) {
 	}
 }
 
+func (b *btree) remove(key int) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("remove key %d\n", key)
+			fmt.Printf("%v\n", err)
+			// fmt.Printf("%v\n", b.breadthFirstDraw())
+			panic(err)
+		}
+	}()
+	if b.root == nil {
+		return
+	}
+
+	b.root.remove(key, b)
+
+	if b.root.count == 0 {
+		if b.root.isLeaf {
+			b.root = nil
+		} else {
+			b.root = b.root.children[0]
+		}
+	}
+}
+
 func (b *btree) preOrderTraversal() []int {
 	result := make([]int, 0)
 	cursor := b.root
+	b.preOrderWalk(cursor, &result)
+	return result
+}
+
+func (b *btree) preOrderTraversalBy(rootNode *node) []int {
+	result := make([]int, 0)
+	cursor := rootNode
 	b.preOrderWalk(cursor, &result)
 	return result
 }
@@ -147,4 +179,36 @@ func (b *btree) breadthFirstDraw() string {
 		newResult += "\n"
 	}
 	return strings.TrimSuffix(newResult, "\n")
+}
+
+func (b *btree) checkValidity() {
+	walkNodeList := b.breadthFirstWalk()
+	for _, node := range walkNodeList {
+		if node == nil {
+			continue
+		}
+		for idx := 0; idx < node.count; idx++ {
+			key := node.keys[idx]
+			leftKeys := b.preOrderTraversalBy(node.children[idx])
+			for _, lk := range leftKeys {
+				if key > lk {
+					continue
+				}
+				fmt.Printf("Encounter invalid leftChild key: %d for key: %d in parent node: %v\n", lk, key, node.keys)
+				fmt.Printf("BFS:\n%s", b.breadthFirstDraw())
+				panic("Encounter invalid key")
+			}
+			if idx != len(node.keys)-1 {
+				rightKeys := b.preOrderTraversalBy(node.children[idx+1])
+				for _, rk := range rightKeys {
+					if key < rk {
+						continue
+					}
+					fmt.Printf("Encounter invalid rightChild key: %d for key: %d in parent node: %v\n", rk, key, node.keys)
+					fmt.Printf("BFS:\n%s", b.breadthFirstDraw())
+					panic("Encounter invalid key")
+				}
+			}
+		}
+	}
 }
