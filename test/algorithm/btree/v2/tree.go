@@ -83,6 +83,9 @@ func (b *btree) preOrderWalk(cursor *node, result *[]int) {
 // important: m in B-Sketcher is btree.t*2
 func (b *btree) breadthFirstWalk() []*node {
 	bfsResult := make([]*node, 0)
+	if b.root == nil {
+		return bfsResult
+	}
 	stack := make([]*node, 0)
 	nextLayerStack := make([]*node, 0)
 	stack = append(stack, b.root)
