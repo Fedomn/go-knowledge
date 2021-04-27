@@ -32,10 +32,15 @@ func newNode(miniDegree int, isLeaf bool) *node {
 	return n
 }
 
+// maximum count = (t-1) left part + (1) spilled key + (t-1) right part
 func (n *node) isFull() bool {
 	return n.count == n.t*2-1
 }
 
+// 理论上一个node最少要有t-1 keys，但是这里的判断是 >= t，原因是:
+// 1. 用于removeFromNonLeaf函数时 只有 >=t，才可以删除，因为有最少t-1限制
+// 2. 用于fill函数时，只有 >=t，才能在borrow 1个后，仍然满足最少t-1限制
+// 3. 用于remove函数逐层搜索中，如果不满足 >=t，就需要先fill，否则待删除key后，节点就不满足t-1限制
 func (n *node) overMiniDegree() bool {
 	return n.count >= n.t
 }
