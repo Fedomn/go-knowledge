@@ -131,3 +131,135 @@ func filterDuplicatedValues(intSlice []int) []int {
 	}
 	return duplicatedValues
 }
+
+func TestRemove_Leaf_BorrowFromNext(t *testing.T) {
+	testData := []int{1, 15, 32, 9, 20, 23, 16, 19, 28}
+	tree := newBtree(4)
+	for _, d := range testData {
+		tree.insert(d)
+		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
+		t.Logf("BFS: \n%s", tree.breadthFirstDraw())
+	}
+
+	tree.remove(9)
+	t.Logf("After remove BFS: \n%s", tree.breadthFirstDraw())
+
+	expectPreOrder := []int{19, 1, 15, 16, 19, 20, 23, 28, 32}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
+		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+func TestRemove_Leaf_BorrowFromPrev(t *testing.T) {
+	testData := []int{1, 15, 32, 9, 20, 16, 19, 12, 13}
+	tree := newBtree(4)
+	for _, d := range testData {
+		tree.insert(d)
+		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
+		t.Logf("BFS: \n%s", tree.breadthFirstDraw())
+	}
+
+	tree.remove(32)
+	t.Logf("After remove BFS: \n%s", tree.breadthFirstDraw())
+	tree.remove(20)
+	t.Logf("After remove BFS: \n%s", tree.breadthFirstDraw())
+
+	expectPreOrder := []int{15, 1, 9, 12, 13, 15, 16, 19}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
+		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+func TestRemove_NonLeaf_Merge(t *testing.T) {
+	testData := []int{1, 32, 20, 16, 19, 12, 13, 38}
+	tree := newBtree(4)
+	for _, d := range testData {
+		tree.insert(d)
+		t.Logf("After insert %d, PreOrder: %v", d, tree.preOrderTraversal())
+		t.Logf("BFS: \n%s", tree.breadthFirstDraw())
+	}
+
+	tree.remove(16)
+	t.Logf("After remove %d, BFS: \n%s", 16, tree.breadthFirstDraw())
+	tree.remove(19)
+	t.Logf("After remove %d, BFS: \n%s", 19, tree.breadthFirstDraw())
+	t.Log("-----------")
+	tree.remove(1)
+	t.Logf("After remove %d, BFS: \n%s", 1, tree.breadthFirstDraw())
+
+	expectPreOrder := []int{12, 13, 20, 32, 38}
+	if !reflect.DeepEqual(tree.preOrderTraversal(), expectPreOrder) {
+		t.Fatalf("BTree insert splitting incorrect, got preOrder: %v", tree.preOrderTraversal())
+	}
+}
+
+func Benchmark_Remove_RandomRemoving(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		randomRemoving(b)
+	}
+}
+
+func randomRemoving(b *testing.B) {
+	tree := newBtree(4)
+	rand.Seed(time.Now().UnixNano())
+	existMap := make(map[int]bool, 0)
+	duplicatedList := make([]int, 0)
+	insertedList := make([]int, 0)
+	count := 100
+	for i := 0; i < count; i++ {
+		randInt := rand.Intn(1000)
+		if existMap[randInt] {
+			duplicatedList = append(duplicatedList, randInt)
+		} else {
+			existMap[randInt] = true
+			insertedList = append(insertedList, randInt)
+		}
+
+		tree.insert(randInt)
+	}
+	firstKey := tree.firstKey()
+	scanKeys := tree.scanKeysFrom(firstKey)
+	insertedCount := len(scanKeys)
+	b.Logf("%v", insertedList)
+
+	if insertedCount != (count - len(duplicatedList)) {
+		b.Logf("BTree random insert count incorrect\n")
+		b.Logf("insertedCount: %d, duplicatedList: %d, sum: %d, existMap: %d\n", insertedCount, len(duplicatedList), insertedCount+len(duplicatedList), len(existMap))
+		b.Logf("duplicatedValues: %v\n", filterDuplicatedValues(tree.preOrderTraversal()))
+		b.Logf("BFS:\n%s", tree.breadthFirstDraw())
+		b.Fatal("Done")
+	}
+	b.Logf("insert done, BFS:\n%s", tree.breadthFirstDraw())
+
+	b.Log("start random removing")
+	for _, key := range insertedList {
+		tree.remove(key)
+		if tree.root == nil {
+			continue
+		}
+		tree.checkValidity()
+		tree.checkNextPointer()
+		b.Logf("After remove %d BFS: \n%s", key, tree.breadthFirstDraw())
+	}
+
+	b.Logf("After remove done BFS: \n%s", tree.breadthFirstDraw())
+
+	if len(tree.preOrderTraversal()) != 0 {
+		b.Fatalf("After BTree random remove, tree should be empty")
+	}
+}
+
+func TestCheck_Validity(t *testing.T) {
+	arr := []int{366, 901, 192, 92, 805, 997, 767, 30, 73, 965, 940, 896, 679, 62, 735, 81, 276, 455, 479, 880, 460, 148, 507, 144, 770, 955, 492, 645, 130, 506, 435, 704, 570, 639, 547, 332, 629, 993, 641, 623, 643, 403, 614, 783, 786, 808, 609, 732, 936, 368, 70, 664, 370, 253, 810, 429, 272, 88, 396, 524, 362, 401, 304, 230, 232, 804, 402, 252, 471, 200, 995, 162, 223, 991, 456, 493, 625, 329, 964, 225, 642, 543, 267, 859, 453, 605, 448, 583, 968, 875, 31}
+	tree := newBtree(4)
+	for i := 0; i < len(arr); i++ {
+		tree.insert(arr[i])
+	}
+	t.Logf("initialized:\n%s", tree.breadthFirstDraw())
+
+	for i := 0; i < len(arr); i++ {
+		tree.remove(arr[i])
+		t.Logf("after remove %d, BFS:\n%s", arr[i], tree.breadthFirstDraw())
+		tree.checkValidity()
+	}
+}

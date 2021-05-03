@@ -54,6 +54,30 @@ func (b *bplustree) insert(key int) {
 	}
 }
 
+func (b *bplustree) remove(key int) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("remove key %d\n", key)
+			fmt.Printf("%v\n", err)
+			// fmt.Printf("%v\n", b.breadthFirstDraw())
+			panic(err)
+		}
+	}()
+	if b.root == nil {
+		return
+	}
+
+	b.root.remove(key)
+
+	if b.root.count == 0 {
+		if b.root.isLeaf {
+			b.root = nil
+		} else {
+			b.root = b.root.children[0]
+		}
+	}
+}
+
 func (b *bplustree) preOrderTraversal() []int {
 	result := make([]int, 0)
 	cursor := b.root
@@ -219,6 +243,9 @@ func (b *bplustree) checkNextPointer() {
 
 // changed for bplustree
 func (b *bplustree) scanKeysFrom(key int) []int {
+	if b.root == nil {
+		return nil
+	}
 	result := make([]int, 0)
 	if node, found := b.root.search(key); found {
 		for i := 0; i < node.count; i++ {
@@ -239,5 +266,9 @@ func (b *bplustree) scanKeysFrom(key int) []int {
 
 // changed for bplustree
 func (b *bplustree) firstKey() int {
+	if b.root == nil {
+		return -1
+	}
+
 	return b.root.firstKey()
 }
