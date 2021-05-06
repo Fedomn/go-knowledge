@@ -8,6 +8,7 @@
 - [Go 语言原本](https://github.com/golang-design/under-the-hood)
 - [Go设计历史](https://github.com/golang-design/history)
 - [Go大杂烩](https://github.com/overnote/over-golang)
+- [The best Golang Learning Resources](https://golangresources.com)
 
 ### example
 - [go-advice](https://github.com/cristaloleg/go-advice/blob/master/README_ZH.md)
