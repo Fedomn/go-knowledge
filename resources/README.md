@@ -11,6 +11,7 @@
 - [The best Golang Learning Resources](https://golangresources.com)
 - [the internals of the Go](https://github.com/teh-cmc/go-internals)
 - [gopher reading list](https://github.com/enocom/gopher-reading-list)
+- [go-perfbook)](https://github.com/dgryski/go-perfbook)
 
 ### example
 - [go-advice](https://github.com/cristaloleg/go-advice/blob/master/README_ZH.md)
