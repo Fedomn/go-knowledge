@@ -24,6 +24,7 @@ func main() {
 // open generated pprof files
 // go tool pprof -http=:8081 ~/pprof.cpu.pb.gz
 
+// 3. optional use gops
 /**
 package main
 
@@ -41,3 +42,16 @@ func main() {
 	time.Sleep(time.Hour)
 }
 */
+// gops
+// gops trace pid
+
+// reference:
+// https://segment.com/blog/allocation-efficiency-in-high-performance-go-services/
+// https://blog.golang.org/pprof
+
+// useful commands:
+// GOGC=2000 GODEBUG='gctrace=1' go run main.go 2>&1 | cat > gc.log
+// go build -gcflags='-m -m'  2>&1 | grep 'escapes to heap'
+
+// https://wudaijun.com/2020/01/go-gc-keypoint-and-monitor/
+// https://golang.org/pkg/runtime/
