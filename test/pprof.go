@@ -55,3 +55,5 @@ func main() {
 
 // https://wudaijun.com/2020/01/go-gc-keypoint-and-monitor/
 // https://golang.org/pkg/runtime/
+
+// https://dave.cheney.net/tag/gogc
