@@ -10,8 +10,11 @@
 - [Go大杂烩](https://github.com/overnote/over-golang)
 - [The best Golang Learning Resources](https://golangresources.com)
 - [the internals of the Go](https://github.com/teh-cmc/go-internals)
+- [深入解析Go](https://tiancaiamao.gitbooks.io/go-internals/content/zh/)
 - [gopher reading list](https://github.com/enocom/gopher-reading-list)
 - [go-perfbook](https://github.com/dgryski/go-perfbook)
+- [GC](https://github.com/cch123/awesome-gc#go)
+- [go-recipes](https://github.com/nikolaydubina/go-recipes)
 
 ### example
 - [go-advice](https://github.com/cristaloleg/go-advice/blob/master/README_ZH.md)
