@@ -28,3 +28,6 @@
 - [Golang algorithms interview questions](https://github.com/shomali11/go-interview)
 - [go-datastructures](https://github.com/Workiva/go-datastructures)
 - [LeetCode-Go](https://github.com/halfrost/LeetCode-Go)
+
+### profiling
+- [various go profiling methods](https://github.com/DataDog/go-profiler-notes)
