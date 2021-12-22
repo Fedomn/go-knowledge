@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/require"
 	"strconv"
+	"strings"
 	"testing"
 	"unicode"
 )
@@ -31,6 +32,8 @@ func (l literalToken) nud() int {
 type infixHandler interface {
 	// led - the infix handler.
 	led(left int) int
+
+	op() string
 }
 
 type infixOperator interface {
@@ -50,6 +53,10 @@ func (a addOperator) led(left int) int {
 	return left + expression(10)
 }
 
+func (a addOperator) op() string {
+	return "+"
+}
+
 func (a addOperator) lbp() int {
 	return 10
 }
@@ -60,31 +67,55 @@ func (m mulOperator) led(left int) int {
 	return left * expression(20)
 }
 
+func (m mulOperator) op() string {
+	return "*"
+}
+
 func (m mulOperator) lbp() int {
 	return 20
 }
 
 var cursor = 0
 var tokens []interface{}
-var token interface{}
+var nextToken interface{}
+var padding []string
+
+func addPadding() {
+	padding = append(padding, "\t")
+}
+
+func popPadding() {
+	if len(padding) > 0 {
+		padding = padding[:len(padding)-1]
+	}
+}
+
+func log(input string) {
+	fmt.Printf("%s%s\n", strings.Join(padding, ""), input)
+}
 
 // rbp: right binding power
 func expression(rbp int) int {
-	t := tokens[cursor]
+	currentToken := tokens[cursor]
 	cursor++
-	token = tokens[cursor]
-	left := t.(prefixHandler).nud()
-	fmt.Printf("prefix : %+v\n", left)
-	for rbp < token.(infixOperator).lbp() {
-		fmt.Printf("infix : %T\n", token)
-		t = token
+	nextToken = tokens[cursor]
+	leftPrefix := currentToken.(prefixHandler).nud()
+
+	addPadding()
+	log(fmt.Sprintf("<prefix %d, rbp %d, nextOp lbp %d>", leftPrefix, rbp, nextToken.(infixOperator).lbp()))
+	for rbp < nextToken.(infixOperator).lbp() {
+		log(fmt.Sprintf("<infix %s, lbp %d>", nextToken.(infixHandler).op(), nextToken.(infixOperator).lbp()))
+
+		currentToken = nextToken
 		cursor++
-		token = tokens[cursor]
-		l := t.(infixHandler).led(left)
-		fmt.Printf("next infix : %T got: %+v\n", t, l)
-		left = l
+		nextToken = tokens[cursor]
+		calcResult := currentToken.(infixHandler).led(leftPrefix)
+		popPadding()
+		log(fmt.Sprintf("<infix %s> = %+v", currentToken.(infixHandler).op(), calcResult))
+
+		leftPrefix = calcResult
 	}
-	return left
+	return leftPrefix
 }
 
 func buildTokens(expr string) []interface{} {
