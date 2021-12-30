@@ -18,6 +18,7 @@
 - [go-recipes](https://github.com/nikolaydubina/go-recipes)
 
 ### example
+- [100-go-mistakes](https://github.com/teivah/100-go-mistakes)
 - [go-advice](https://github.com/cristaloleg/go-advice/blob/master/README_ZH.md)
 - [gotraining-studyguide](https://github.com/ardanlabs/gotraining-studyguide)
 - [ultimate-go](https://github.com/betty200744/ultimate-go)
