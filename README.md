@@ -16,6 +16,7 @@
 - [go-perfbook](https://github.com/dgryski/go-perfbook)
 - [GC](https://github.com/cch123/awesome-gc#go)
 - [go-recipes](https://github.com/nikolaydubina/go-recipes)
+- [go-profiler-notes](https://github.com/DataDog/go-profiler-notes)
 
 ### example
 - [100-go-mistakes](https://github.com/teivah/100-go-mistakes)
