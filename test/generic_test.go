@@ -1,10 +1,11 @@
-//go:build generic_enable
-
 // refer to https://go.dev/doc/tutorial/generics
 
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 type Number interface {
 	int64 | float64
@@ -24,9 +25,9 @@ func TestGeneric(t *testing.T) {
 		"first":  34,
 		"second": 12,
 	}
-	floats := map[string]float64{
-		"first":  35.98,
-		"second": 26.99,
+	floats := map[int]float64{
+		1: 35.98,
+		2: 26.99,
 	}
 	fmt.Printf("Generic Sums: %v and %v\n",
 		SumIntsOrFloats(ints),

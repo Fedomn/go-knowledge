@@ -1,6 +1,6 @@
 module github.com/fedomn/go-knowledge
 
-go 1.17
+go 1.18
 
 require (
 	github.com/coreos/bbolt v1.3.3 // indirect
