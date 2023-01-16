@@ -14,6 +14,7 @@ func BinarySearch(nums []int, target int) int {
 			right = mid - 1
 		}
 	}
+	// left 最后最为 target 可以插入的位置
 	return -1
 }
 
