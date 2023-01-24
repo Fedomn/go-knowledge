@@ -1,23 +1,23 @@
 package lc
 
-func canJump(nums []int) bool {
-	start, end := 0, 1
-	lastPos := 0
-	for {
-		maxPos := 0
-		for i := start; i < end; i++ {
-			maxPos = max(maxPos, nums[i]+i)
+import "sort"
+
+func merge(intervals [][]int) [][]int {
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i][0] < intervals[j][0]
+	})
+	// fmt.Println(intervals)
+	res := make([][]int, 0)
+	res = append(res, intervals[0])
+	for i := 1; i < len(intervals); i++ {
+		lastRange := res[len(res)-1]
+		if intervals[i][0] <= lastRange[1] {
+			res[len(res)-1][1] = max(intervals[i][1], lastRange[1])
+		} else {
+			res = append(res, intervals[i])
 		}
-		//fmt.Println(maxPos, start, end)
-		if maxPos >= len(nums)-1 {
-			return true
-		}
-		if lastPos == maxPos && maxPos < len(nums) {
-			return false
-		}
-		start = end
-		end = maxPos + 1
-		lastPos = maxPos
+		// fmt.Println(res)
 	}
-	//return false
+
+	return res
 }
