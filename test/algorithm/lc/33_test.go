@@ -13,9 +13,9 @@ func search33(nums []int, target int) int {
 		}
 
 		// 判断左边是否有序
-		if nums[0] <= nums[mid] {
+		if nums[left] <= nums[mid] {
 			// 如果有序，判断target是否在当中
-			if nums[0] <= target && target < nums[mid] {
+			if nums[left] <= target && target < nums[mid] {
 				// 符合正常二分搜索
 				right = mid - 1
 			} else {

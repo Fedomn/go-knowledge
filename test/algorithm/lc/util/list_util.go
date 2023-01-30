@@ -29,6 +29,7 @@ func WalkList(l *ListNode) []int {
 	return res
 }
 
+// 总体思路，每次取出一个节点，放入新的链表中
 func reverseHeadTailUtil(head, tail *ListNode) (*ListNode, *ListNode) {
 	prev := tail.Next
 	cursor := head
