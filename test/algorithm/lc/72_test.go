@@ -1,5 +1,11 @@
 package lc
 
+import (
+	"fmt"
+	"strconv"
+	"testing"
+)
+
 func minDistance(word1 string, word2 string) int {
 	// dp[i][j] 定义为word1的前i个字符 转换到 word2的前j个字符，所需要的操作数
 	m, n := len(word1), len(word2)
@@ -32,4 +38,9 @@ func minDistance(word1 string, word2 string) int {
 		}
 	}
 	return dp[m][n]
+}
+
+func TestAAA(t *testing.T) {
+	a, err := strconv.Atoi("012")
+	fmt.Println(a, err)
 }
