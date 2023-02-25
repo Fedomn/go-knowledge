@@ -11,7 +11,7 @@ type node struct {
 	prev *node
 }
 
-func Constructor() MyLinkedList {
+func Constructor707() MyLinkedList {
 	dummy := &node{val: -1}
 	dummy.next = dummy
 	dummy.prev = dummy

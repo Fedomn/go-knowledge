@@ -2,7 +2,6 @@ package lc
 
 import (
 	"fmt"
-	. "github.com/fedomn/go-knowledge/test/algorithm/lc/util"
 	"reflect"
 	"testing"
 )
@@ -46,18 +45,20 @@ func getKthElem(nums1, nums2 []int, k int) int {
 		if k == 1 {
 			fmt.Println("return, k=1,", n1StartIdx, n2StartIdx)
 			// 找到第 1 小的元素
-			return Min(nums1[n1StartIdx], nums2[n2StartIdx])
+			return min(nums1[n1StartIdx], nums2[n2StartIdx])
 		}
 
 		half := k / 2
 		// 准备下一轮的起始 idx
-		n1StartIdxNew := Min(n1StartIdx+half, len(nums1)) - 1
-		n2StartIdxNew := Min(n2StartIdx+half, len(nums2)) - 1
+		n1StartIdxNew := min(n1StartIdx+half, len(nums1)) - 1
+		n2StartIdxNew := min(n2StartIdx+half, len(nums2)) - 1
 		fmt.Println("start", n1StartIdxNew, n2StartIdxNew, ",", nums1[n1StartIdxNew], nums2[n2StartIdxNew])
 		if nums1[n1StartIdxNew] <= nums2[n2StartIdxNew] {
+			// nums1 的元素更小，则继续移动 nums1 的下标
 			k -= n1StartIdxNew - n1StartIdx + 1
 			n1StartIdx = n1StartIdxNew + 1
 		} else {
+			// nums2 的元素更小，则继续移动 nums2 的下标
 			k -= n2StartIdxNew - n2StartIdx + 1
 			n2StartIdx = n2StartIdxNew + 1
 		}

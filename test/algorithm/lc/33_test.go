@@ -13,7 +13,7 @@ func search33(nums []int, target int) int {
 		}
 
 		// 判断左边是否有序
-		if nums[left] <= nums[mid] {
+		if nums[left] <= nums[mid] { // <= 是为了包含数组为2个元素的情况
 			// 如果有序，判断target是否在当中
 			if nums[left] <= target && target < nums[mid] {
 				// 符合正常二分搜索
@@ -23,7 +23,8 @@ func search33(nums []int, target int) int {
 				left = mid + 1
 			}
 		} else {
-			if nums[mid] < target && target <= nums[len(nums)-1] {
+			// 右边有序
+			if nums[mid] < target && target <= nums[right] {
 				left = mid + 1
 			} else {
 				right = mid - 1

@@ -29,6 +29,12 @@ func WalkList(l *ListNode) []int {
 	return res
 }
 
+// 想象一颗从左向右的链表
+// 翻转链表核心：
+// 1. 先定义 prev 和 cursor
+// 2. 处理cursor.Next
+// 3. 设置 prev 和 cursor
+
 // 总体思路，每次取出一个节点，放入新的链表中
 func reverseHeadTailUtil(head, tail *ListNode) (*ListNode, *ListNode) {
 	prev := tail.Next

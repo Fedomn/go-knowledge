@@ -2,7 +2,7 @@ package util
 
 import "fmt"
 
-func BinarySearch(nums []int, target int) int {
+func BinarySearchUtil(nums []int, target int) int {
 	left, right := 0, len(nums)-1
 	for left <= right {
 		mid := (left + right) / 2
@@ -18,7 +18,7 @@ func BinarySearch(nums []int, target int) int {
 	return -1
 }
 
-func BinaryRightMost(nums []int, target int) int {
+func BinaryRightMostUtil(nums []int, target int) int {
 	left, right := 0, len(nums)-1
 	for left <= right {
 		mid := (left + right) / 2
@@ -34,7 +34,7 @@ func BinaryRightMost(nums []int, target int) int {
 	return left - 1
 }
 
-func BinaryLeftMost(nums []int, target int) int {
+func BinaryLeftMostUtil(nums []int, target int) int {
 	left, right := 0, len(nums)-1
 	for left <= right {
 		mid := (left + right) / 2

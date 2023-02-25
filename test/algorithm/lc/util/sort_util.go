@@ -28,7 +28,8 @@ func quickSort(nums []int, left, right int) {
 	quickSort(nums, pivot+1, right)
 }
 
-// 我们遍历 left 到 right 之间的数据
+// 相当于每次将数据分为两块部分，中间的值为中值，后续再递归调用
+// 我们遍历 left 到 right 之间的数据，将比left小的往前移动，最后将left移动到中值位置
 func partition(nums []int, left, right int) int {
 	pivot := nums[left]
 	// storeIndex 代表比 pivot 小的位置，因此在移动时，需要与这个值交换

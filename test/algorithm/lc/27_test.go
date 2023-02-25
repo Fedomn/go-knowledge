@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// 只要当前fast值与 val 不同，则 fast/slow 一起向前移动
 func removeElement(nums []int, val int) int {
 	slow := 0
 	for fast := 0; fast < len(nums); fast++ {
