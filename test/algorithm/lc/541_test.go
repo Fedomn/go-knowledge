@@ -1,5 +1,6 @@
 package lc
 
+// 给定一个字符串 `s` 和一个整数 `k`，从字符串开头算起，每计数至 `2k` 个字符，就反转这`2k` 字符中的前`k` 个字符。
 func reverseStr(input string, k int) string {
 	s := []rune(input)
 	for i := 0; i < len(s); i += 2 * k {

@@ -22,6 +22,8 @@ func PreOrder(root *TreeNode) {
 }
 
 // 中序遍历：left->root->right
+// 注意：这个顺序也针对于子树，也就是说：访问左子树或者右子树的时候我们按照同样的方式遍历
+// https://leetcode.cn/problems/binary-tree-inorder-traversal/
 func InOrder(root *TreeNode) {
 	if root.Left != nil {
 		InOrder(root.Left)
@@ -60,4 +62,12 @@ func PostOrder(root *TreeNode) {
 		PostOrder(root.Right)
 	}
 	fmt.Println(root.Val)
+}
+
+// dfs tree
+func height(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	return Max(height(root.Left), height(root.Right)) + 1
 }
