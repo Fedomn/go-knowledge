@@ -70,3 +70,33 @@ func reverseFromHeadUtil(head *ListNode) *ListNode {
 	}
 	return prev
 }
+
+func middleNode(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast.Next != nil && fast.Next.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	return slow
+}
+
+func mergeTwoList(l, r *ListNode) *ListNode {
+	dummyHeader := &ListNode{}
+	cursor := dummyHeader
+	// 每次 l 放在前面，r 放在后面
+	for l != nil && r != nil {
+		cursor.Next = l
+		l = l.Next
+		cursor = cursor.Next
+
+		cursor.Next = r
+		r = r.Next
+		cursor = cursor.Next
+	}
+	if l != nil {
+		cursor.Next = l
+	} else if r != nil {
+		cursor.Next = r
+	}
+	return dummyHeader.Next
+}

@@ -64,7 +64,7 @@ func PostOrder(root *TreeNode) {
 	fmt.Println(root.Val)
 }
 
-// dfs tree
+// 二叉树的最大深度
 func height(root *TreeNode) int {
 	if root == nil {
 		return 0
