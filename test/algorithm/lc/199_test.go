@@ -2,7 +2,7 @@ package lc
 
 import . "github.com/fedomn/go-knowledge/test/algorithm/lc/util"
 
-// 记录每一层的最后一个元素
+// 二叉树的右视图: 记录每一层的最后一个元素
 func rightSideView(root *TreeNode) []int {
 	res := make([]int, 0)
 	var dfs func(*TreeNode, int)

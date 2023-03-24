@@ -36,3 +36,11 @@ func searchFirstLargerIdx(nodes []int, find int) (int, bool) {
 	})
 	return idx, idx < len(nodes) && nodes[idx] == find
 }
+
+func Test_SortStrings(t *testing.T) {
+	strings := []string{"abc", "acb", "bac"}
+	sort.Slice(strings, func(i, j int) bool {
+		return strings[i] < strings[j]
+	})
+	fmt.Println(strings)
+}

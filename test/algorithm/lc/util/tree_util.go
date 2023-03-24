@@ -71,3 +71,44 @@ func height(root *TreeNode) int {
 	}
 	return Max(height(root.Left), height(root.Right)) + 1
 }
+
+// 利用二叉树的level遍历
+// 由于每层只有一个数，因此，len(res) == level 时，代表遇到当前层
+func rightSideView(root *TreeNode) []int {
+	res := make([]int, 0)
+	var dfs func(*TreeNode, int)
+	dfs = func(n *TreeNode, level int) {
+		if n != nil {
+			if len(res) == level {
+				res = append(res, n.Val)
+			}
+			// 优先找右边
+			dfs(n.Right, level+1)
+			// 如果右边没有，则选择左边
+			dfs(n.Left, level+1)
+		}
+		return
+	}
+	dfs(root, 0)
+	return res
+}
+
+// 二叉树最大宽度
+// 类似堆存数组时的index一样，即：root编号为idx时候，左孩子编号: 2*idx，右孩子变化: 2*idx+1
+func widthOfBinaryTree(root *TreeNode) int {
+	levelMin := map[int]int{}
+	var dfs func(*TreeNode, int, int) int
+	dfs = func(node *TreeNode, depth, index int) int {
+		if node == nil {
+			return 0
+		}
+		if _, ok := levelMin[depth]; !ok {
+			levelMin[depth] = index // 每一层最先访问到的节点会是最左边的节点，即每一层编号的最小值
+		}
+		leftChildWidth := dfs(node.Left, depth+1, index*2)
+		rightChildWidth := dfs(node.Right, depth+1, index*2+1)
+		currentLevelWidth := index - levelMin[depth]
+		return Max(currentLevelWidth+1, Max(leftChildWidth, rightChildWidth))
+	}
+	return dfs(root, 1, 1)
+}

@@ -1,8 +1,12 @@
 package lc
 
+// [1,2,0]
+// 3
 func firstMissingPositive(nums []int) int {
 	// 最小正整数，代表长度为3的正整数数组，应该是[1,2,3]
 	// 因此，采用原地hash方式，交换所有正整数至对应位置
+	// nums[i] 应该等于 i+1
+	// nums[i]-1 = i
 
 	for i := 0; i < len(nums); i++ {
 		for nums[i] > 0 && nums[i]-1 < len(nums) && nums[nums[i]-1] != nums[i] {
