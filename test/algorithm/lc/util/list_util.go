@@ -6,18 +6,13 @@ type ListNode struct {
 }
 
 func GenListNode(input []int) *ListNode {
-	cursor := &ListNode{}
-	root := cursor
+	dummyHead := &ListNode{}
+	cursor := dummyHead
 	for i := 0; i < len(input); i++ {
-		cursor.Val = input[i]
-		if i+1 > len(input)-1 {
-			return root
-		} else {
-			cursor.Next = &ListNode{}
-			cursor = cursor.Next
-		}
+		cursor.Next = &ListNode{Val: input[i]}
+		cursor = cursor.Next
 	}
-	return root
+	return dummyHead.Next
 }
 
 func WalkList(l *ListNode) []int {

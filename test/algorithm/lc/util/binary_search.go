@@ -18,6 +18,7 @@ func BinarySearchUtil(nums []int, target int) int {
 	return -1
 }
 
+// BinaryRightMostUtil 找最右边，代表，区间要往右侧移动，即 left = mid + 1
 func BinaryRightMostUtil(nums []int, target int) int {
 	left, right := 0, len(nums)-1
 	for left <= right {
@@ -34,6 +35,7 @@ func BinaryRightMostUtil(nums []int, target int) int {
 	return left - 1
 }
 
+// BinaryLeftMostUtil 找最左边，代表，区间要往左侧移动，即 right = mid - 1
 func BinaryLeftMostUtil(nums []int, target int) int {
 	left, right := 0, len(nums)-1
 	for left <= right {
